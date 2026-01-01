@@ -67,11 +67,26 @@ body {
 
 <script>
 // ------------------ MUSIC AUTOPLAY ------------------
-window.addEventListener('load', () => {
-    const audio = document.getElementById('music');
-    audio.muted = false;
-    audio.play().catch(e => console.log("Autoplay blocked, user interaction needed."));
+const audio = document.getElementById("music");
+
+// Try to play immediately on load
+window.addEventListener("load", () => {
+  audio.play().catch(() => {
+    console.log("Autoplay blocked, waiting for interaction");
+  });
 });
+
+// Fallback: play on FIRST interaction (guaranteed)
+const unlockAudio = () => {
+  audio.play();
+  document.removeEventListener("click", unlockAudio);
+  document.removeEventListener("touchstart", unlockAudio);
+  document.removeEventListener("mousemove", unlockAudio);
+};
+
+document.addEventListener("click", unlockAudio);
+document.addEventListener("touchstart", unlockAudio);
+document.addEventListener("mousemove", unlockAudio);
 
 // ------------------ TYPEWRITER TEXT ------------------
 const lines = [
