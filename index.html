@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Happy Birthday ❤️</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  overflow:hidden;
+  font-family: 'Poppins';
+  color:white;
+  height: 100vh;
+}
+
+#background {
+    position: fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    z-index:-1;
+    filter: brightness(0.6); 
+}
+
+#canvas { position:absolute; inset:0; z-index:0; }
+
+#text {
+  position:fixed;
+  top:10%;
+  width:100%;
+  text-align:center;
+  font-size:26px;
+  line-height:1.7;
+  z-index:3;
+  text-shadow:0 0 15px #423134;
+}
+
+#hint {
+  position:fixed;
+  bottom:10px;
+  width:100%;
+  text-align:center;
+  color:#fff;
+  z-index:4;
+  font-size:14px;
+}
+</style>
+</head>
+<body>
+
+<div id="background">
+    <img src="img2.png" alt="Background" style="width:100%; height:100%; object-fit:cover;">
+</div>
+
+<audio id="music" loop>
+  <source src="aud.mp3" type="audio/mpeg">
+</audio>
+
+<canvas id="canvas"></canvas>
+
+<div id="text"></div>
+
+<div id="hint">Happy Birthday! 🎂🎉</div>
+
+<script>
+// ------------------ MUSIC AUTOPLAY ------------------
+window.addEventListener('load', () => {
+    const audio = document.getElementById('music');
+    audio.muted = false;
+    audio.play().catch(e => console.log("Autoplay blocked, user interaction needed."));
+});
+
+// ------------------ TYPEWRITER TEXT ------------------
+const lines = [
+    "Happy Birthday 🎂🎈",
+    "My Love 🎀💞",
+    "May God bless you 🙏🍀",
+    "And give you endless happiness 💕",
+    "I love you ❤️",
+    "And I will always love you 💐❤️"
+];
+let l=0, c=0;
+const box=document.getElementById("text");
+function type(){
+    if(l<lines.length){
+        if(c<lines[l].length){
+            box.innerHTML+=lines[l][c++];
+            setTimeout(type,60);
+        } else {
+            box.innerHTML+="<br>";
+            c=0; l++; setTimeout(type,500);
+        }
+    }
+}
+type();
+
+// ------------------ CANVAS ------------------
+const canvas=document.getElementById("canvas");
+const ctx=canvas.getContext("2d");
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
+
+let hearts=[];
+function spawnHeart(){
+    hearts.push({
+        x: Math.random()*canvas.width,
+        y: canvas.height+20,
+        s: Math.random()*1.5+0.5,
+        v: Math.random()*1+0.5
+    });
+}
+
+// ------------------ CAKE ------------------
+let flameVisible = true;
+let smokeParticles = [];
+
+function drawCake(){
+    const cx = canvas.width/2;
+    const cy = canvas.height/2 + 100;
+
+    ctx.fillStyle="#FF9999";
+    ctx.fillRect(cx-75, cy-50, 150, 100);
+    ctx.fillStyle="#FF6666";
+    ctx.fillRect(cx-75, cy-50, 150, 20);
+
+    ctx.fillStyle="#FFFF99";
+    ctx.fillRect(cx-5, cy-80, 10, 30);
+
+    if(flameVisible){
+        ctx.fillStyle=`rgba(255,${Math.floor(150+Math.random()*105)},0,1)`;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy-80);
+        ctx.quadraticCurveTo(cx-5, cy-90, cx, cy-100);
+        ctx.quadraticCurveTo(cx+5, cy-90, cx, cy-80);
+        ctx.fill();
+    }
+}
+
+// ------------------ SMOKE ------------------
+class Smoke{
+    constructor(x,y){
+        this.x=x; this.y=y;
+        this.size=Math.random()*10+5;
+        this.opacity=0.8;
+        this.vx=(Math.random()-0.5)*1;
+        this.vy=-Math.random()*1.5-0.5;
+    }
+    update(){ this.x+=this.vx; this.y+=this.vy; this.size+=0.1; this.opacity-=0.01; }
+    draw(){ ctx.fillStyle=`rgba(255,255,255,${this.opacity})`; ctx.beginPath(); ctx.arc(this.x,this.y,this.size,0,Math.PI*2); ctx.fill(); }
+}
+
+// ------------------ PARTY POPPER CONFETTI ------------------
+class Confetti{
+    constructor(){ 
+        this.x=Math.random()*canvas.width; 
+        this.y=Math.random()*-canvas.height; 
+        this.size=Math.random()*6+4; 
+        this.color=`hsl(${Math.random()*360},100%,50%)`; 
+        this.vx=(Math.random()-0.5)*2; 
+        this.vy=Math.random()*3+2; 
+    }
+    update(){ this.x+=this.vx; this.y+=this.vy; if(this.y>canvas.height)this.y=-10; }
+    draw(){ ctx.fillStyle=this.color; ctx.beginPath(); ctx.arc(this.x,this.y,this.size,0,Math.PI*2); ctx.fill(); }
+}
+let confettiParticles=[];
+for(let i=0;i<150;i++) confettiParticles.push(new Confetti());
+
+// ------------------ ANIMATE ------------------
+function animate(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+
+    // hearts
+    hearts.forEach((h,i)=>{
+        ctx.fillStyle="rgba(255,77,109,0.8)";
+        ctx.beginPath();
+        ctx.arc(h.x,h.y,6*h.s,0,Math.PI*2);
+        ctx.fill();
+        h.y-=h.v*2;
+        if(h.y<-20) hearts.splice(i,1);
+    });
+
+    // cake
+    drawCake();
+
+    // smoke
+    smokeParticles.forEach((p,i)=>{
+        p.update(); p.draw(); if(p.opacity<=0) smokeParticles.splice(i,1);
+    });
+
+    // confetti
+    confettiParticles.forEach(p=>{ p.update(); p.draw(); });
+
+    requestAnimationFrame(animate);
+}
+animate();
+setInterval(spawnHeart,200);
+
+// ------------------ BLOW CANDLE ------------------
+canvas.addEventListener("click",(e)=>{
+    const cx = canvas.width/2;
+    const cy = canvas.height/2 + 100;
+    if(e.clientX>cx-75 && e.clientX<cx+75 && e.clientY>cy-50 && e.clientY<cy+50){
+        flameVisible=false;
+        for(let i=0;i<50;i++) smokeParticles.push(new Smoke(cx, cy-80));
+    }
+});
+
+// ------------------ RESIZE ------------------
+window.addEventListener('resize', ()=>{
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+});
+</script>
+</body>
+</html>
