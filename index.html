@@ -55,9 +55,10 @@ body {
     <img src="img2.png" alt="Background" style="width:100%; height:100%; object-fit:cover;">
 </div>
 
-<audio id="music" loop>
+<audio id="music" loop preload="auto">
   <source src="aud.mp3" type="audio/mpeg">
 </audio>
+
 
 <canvas id="canvas"></canvas>
 
@@ -66,27 +67,35 @@ body {
 <div id="hint">Happy Birthday! 🎂🎉</div>
 
 <script>
-// ------------------ MUSIC AUTOPLAY ------------------
 const audio = document.getElementById("music");
+let audioStarted = false;
 
-// Try to play immediately on load
+function startAudio() {
+  if (audioStarted) return;
+  audioStarted = true;
+
+  audio.volume = 1;
+  audio.play().catch(() => {});
+  
+  document.removeEventListener("click", startAudio);
+  document.removeEventListener("touchstart", startAudio);
+  document.removeEventListener("mousemove", startAudio);
+  document.removeEventListener("keydown", startAudio);
+}
+
+// Try once on load (some browsers allow it)
 window.addEventListener("load", () => {
-  audio.play().catch(() => {
-    console.log("Autoplay blocked, waiting for interaction");
-  });
+  audio.play().then(() => {
+    audioStarted = true;
+  }).catch(() => {});
 });
 
-// Fallback: play on FIRST interaction (guaranteed)
-const unlockAudio = () => {
-  audio.play();
-  document.removeEventListener("click", unlockAudio);
-  document.removeEventListener("touchstart", unlockAudio);
-  document.removeEventListener("mousemove", unlockAudio);
-};
+// Guaranteed unlock
+document.addEventListener("click", startAudio, { once: true });
+document.addEventListener("touchstart", startAudio, { once: true });
+document.addEventListener("mousemove", startAudio, { once: true });
+document.addEventListener("keydown", startAudio, { once: true });
 
-document.addEventListener("click", unlockAudio);
-document.addEventListener("touchstart", unlockAudio);
-document.addEventListener("mousemove", unlockAudio);
 
 // ------------------ TYPEWRITER TEXT ------------------
 const lines = [
