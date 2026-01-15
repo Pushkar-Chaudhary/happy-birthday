@@ -2,233 +2,537 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Happy Birthday ❤️</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Sacramento&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  
+  body {
+    overflow: hidden;
+    font-family: 'Poppins', sans-serif;
+    color: white;
+    height: 100vh;
+    background: #1a0b14;
+    touch-action: manipulation;
+  }
 
-* { margin:0; padding:0; box-sizing:border-box; }
-
-body {
-  overflow:hidden;
-  font-family: 'Poppins';
-  color:white;
-  height: 100vh;
-}
-
-#background {
+  /* Background */
+  #background {
     position: fixed;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    z-index:-1;
-    filter: brightness(0.6); 
-}
+    inset: 0;
+    z-index: -2;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.4);
+    background-image: url('https://images.unsplash.com/photo-1513151233558-d860c5398176?q=80&w=2070&auto=format&fit=crop'); 
+    background-size: cover;
+    background-position: center;
+  }
 
-#canvas { position:absolute; inset:0; z-index:0; }
+  /* Canvas */
+  #canvas {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: block;
+  }
 
-#text {
-  position:fixed;
-  top:10%;
-  width:100%;
-  text-align:center;
-  font-size:26px;
-  line-height:1.7;
-  z-index:3;
-  text-shadow:0 0 15px #423134;
-}
+  /* Start Overlay (Required for Browser Audio Policy) */
+  #intro-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    cursor: pointer; /* Click anywhere works */
+  }
 
-#hint {
-  position:fixed;
-  bottom:10px;
-  width:100%;
-  text-align:center;
-  color:#fff;
-  z-index:4;
-  font-size:14px;
-}
+  .start-btn {
+    background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+    border: none;
+    padding: 25px 70px;
+    color: white;
+    font-size: 1.8rem;
+    font-weight: 600;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 10px 40px rgba(255, 107, 107, 0.6);
+    font-family: 'Poppins', sans-serif;
+    animation: pulse 2s infinite;
+  }
+
+  /* Text Container */
+  #text-container {
+    position: absolute;
+    top: 8%; /* Moved up slightly since cake is lower */
+    width: 90%;
+    max-width: 600px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(4px);
+    padding: 15px;
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+
+  #text { font-size: 1.3rem; line-height: 1.6; font-weight: 300; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+  .highlight { font-family: 'Sacramento', cursive; color: #ff9ff3; font-size: 1.8rem; text-shadow: 0 0 10px rgba(255, 154, 243, 0.8); }
+
+  /* Hints */
+  #hint {
+    position: fixed;
+    bottom: 20px;
+    width: 100%;
+    text-align: center;
+    z-index: 10;
+    font-size: 1rem;
+    background: rgba(0,0,0,0.6);
+    padding: 12px 0;
+    pointer-events: none;
+    color: #fff;
+    font-weight: 500;
+  }
+
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.7); }
+    70% { box-shadow: 0 0 0 20px rgba(255, 107, 107, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0); }
+  }
+
+  @media (max-width: 600px) {
+    #text { font-size: 1rem; line-height: 1.4; }
+    .highlight { font-size: 1.5rem; }
+    #hint { font-size: 0.85rem; }
+    .start-btn { padding: 20px 50px; font-size: 1.5rem; }
+  }
 </style>
 </head>
 <body>
+
+<!-- OVERLAY (Starts Music & Mic) -->
+<div id="intro-overlay" onclick="startCelebration()">
+  <h1 style="margin-bottom: 30px; font-weight: 300; font-size: 2.5rem; color: #fff;">🎂 Happy Birthday! 🎂</h1>
+  <button class="start-btn">Enter Party 🎉</button>
+  <p style="margin-top: 20px; color: #aaa; font-size: 0.9rem;">(Please allow microphone access to blow candles!)</p>
+</div>
+
+<!-- BACKGROUND -->
+<div id="background"></div>
+
+<!-- CANVAS -->
+<canvas id="canvas"></canvas>
+
+<!-- TEXT -->
+<div id="text-container">
+  <div id="text"></div>
+</div>
+
+<!-- HINT -->
+<div id="hint">🎤 Blow into the microphone or tap the cake!</div>
+
+<!-- AUDIO -->
 <audio id="music" loop>
   <source src="aud.mp3" type="audio/mpeg">
 </audio>
 
-<div id="background">
-    <img src="img2.png" alt="Background" style="width:100%; height:100%; object-fit:cover;">
-</div>
-
-<canvas id="canvas"></canvas>
-
-<div id="text"></div>
-
-<div id="hint">Happy Birthday! 🎂🎉</div>
-
 <script>
-const audio = document.getElementById("music");
-let audioStarted = false;
+/* ===== VARIABLES ===== */
+let canvas, ctx, width, height, scale;
+let audio, textEl, hintEl, overlay;
+let state = {
+  started: false,
+  cakeLanded: false,
+  candlesBlown: false,
+  giftVisible: false,
+  giftOpen: false
+};
 
-function startAudio() {
-  if (audioStarted) return;
-  audioStarted = true;
-
-  audio.volume = 1;
-  audio.play().catch(() => {});
+/* ===== INITIALIZATION ===== */
+window.onload = function() {
+  canvas = document.getElementById("canvas");
+  ctx = canvas.getContext("2d");
+  audio = document.getElementById("music");
+  textEl = document.getElementById("text");
+  hintEl = document.getElementById("hint");
+  overlay = document.getElementById("intro-overlay");
   
-  document.removeEventListener("click", startAudio);
-  document.removeEventListener("touchstart", startAudio);
-  document.removeEventListener("mousemove", startAudio);
-  document.removeEventListener("keydown", startAudio);
+  resize();
+  window.addEventListener("resize", resize);
+  
+  // Interaction Listeners
+  canvas.addEventListener("click", blowCandles);
+  canvas.addEventListener("touchstart", blowCandles);
+};
+
+function resize() {
+  width = canvas.width = innerWidth;
+  height = canvas.height = innerHeight;
+  scale = Math.min(width / 800, 1);
+  initCandles();
 }
 
-// Try once on load (some browsers allow it)
-window.addEventListener("load", () => {
+/* ===== MAIN START FUNCTION ===== */
+function startCelebration() {
+  console.log("Starting Celebration...");
+  
+  // 1. Hide Overlay
+  overlay.style.display = "none";
+  
+  // 2. Audio Fade In
+  audio.volume = 0;
   audio.play().then(() => {
-    audioStarted = true;
-  }).catch(() => {});
-});
+    let v = 0;
+    const fade = setInterval(() => {
+      v += 0.05;
+      audio.volume = Math.min(v, 1);
+      if(v>=1) clearInterval(fade);
+    }, 100);
+  }).catch(e => console.log("Audio play failed", e));
+  
+  // 3. Set State
+  state.started = true;
+  
+  // 4. Start Typing
+  startTypewriter();
+  
+  // 5. Start Animation Loop
+  animate();
+  
+  // 6. Initialize Microphone
+  initMicrophone();
+}
 
-// Guaranteed unlock
-document.addEventListener("click", startAudio, { once: true });
-document.addEventListener("touchstart", startAudio, { once: true });
-document.addEventListener("mousemove", startAudio, { once: true });
-document.addEventListener("keydown", startAudio, { once: true });
+/* ===== MICROPHONE LOGIC ===== */
+function initMicrophone() {
+  // Check if browser supports it
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    hintEl.innerText = "Tap the cake to blow candles! 🎂";
+    return;
+  }
 
-
-// ------------------ TYPEWRITER TEXT ------------------
-const lines = [
-    "Happy Birthday Goluuu🎂🎈",
-    "My Love 🎀💞",
-    "May God bless you 🙏🍀",
-    "And give you endless happiness 💕",
-    "I love you ❤️",
-    "And I will always love you 💐❤️"
-];
-let l=0, c=0;
-const box=document.getElementById("text");
-function type(){
-    if(l<lines.length){
-        if(c<lines[l].length){
-            box.innerHTML+=lines[l][c++];
-            setTimeout(type,60);
-        } else {
-            box.innerHTML+="<br>";
-            c=0; l++; setTimeout(type,500);
+  navigator.mediaDevices.getUserMedia({ audio: true })
+    .then(stream => {
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const analyser = audioContext.createAnalyser();
+      const microphone = audioContext.createMediaStreamSource(stream);
+      microphone.connect(analyser);
+      
+      analyser.fftSize = 256;
+      const bufferLength = analyser.frequencyBinCount;
+      const dataArray = new Uint8Array(bufferLength);
+      
+      let volumeHistory = [];
+      
+      function detectSound() {
+        analyser.getByteFrequencyData(dataArray);
+        
+        // Calculate average volume
+        let sum = 0;
+        for(let i = 0; i < bufferLength; i++) {
+          sum += dataArray[i];
         }
-    }
-}
-type();
-
-// ------------------ CANVAS ------------------
-const canvas=document.getElementById("canvas");
-const ctx=canvas.getContext("2d");
-canvas.width=window.innerWidth;
-canvas.height=window.innerHeight;
-
-let hearts=[];
-function spawnHeart(){
-    hearts.push({
-        x: Math.random()*canvas.width,
-        y: canvas.height+20,
-        s: Math.random()*1.5+0.5,
-        v: Math.random()*1+0.5
+        let average = sum / bufferLength;
+        
+        // Dynamic threshold: if volume spikes significantly above history
+        volumeHistory.push(average);
+        if(volumeHistory.length > 20) volumeHistory.shift();
+        
+        let averageHistory = volumeHistory.reduce((a,b) => a+b) / volumeHistory.length;
+        
+        // Threshold: needs to be significantly louder than background noise
+        if (average > averageHistory + 20 && average > 15) {
+           blowCandles();
+        }
+        
+        requestAnimationFrame(detectSound);
+      }
+      detectSound();
+      
+    })
+    .catch(err => {
+      console.log("Microphone access denied or error:", err);
+      hintEl.innerText = "Tap the cake to blow candles! 🎂";
     });
 }
 
-// ------------------ CAKE ------------------
-let flameVisible = true;
-let smokeParticles = [];
-
-function drawCake(){
-    const cx = canvas.width/2;
-    const cy = canvas.height/2 + 100;
-
-    ctx.fillStyle="#FF9999";
-    ctx.fillRect(cx-75, cy-50, 150, 100);
-    ctx.fillStyle="#FF6666";
-    ctx.fillRect(cx-75, cy-50, 150, 20);
-
-    ctx.fillStyle="#FFFF99";
-    ctx.fillRect(cx-5, cy-80, 10, 30);
-
-    if(flameVisible){
-        ctx.fillStyle=`rgba(255,${Math.floor(150+Math.random()*105)},0,1)`;
-        ctx.beginPath();
-        ctx.moveTo(cx, cy-80);
-        ctx.quadraticCurveTo(cx-5, cy-90, cx, cy-100);
-        ctx.quadraticCurveTo(cx+5, cy-90, cx, cy-80);
-        ctx.fill();
+/* ===== TYPEWRITER ===== */
+const lines = [
+  "Happy Birthday <span class='highlight'>Goluuu</span> 🎂🎈",
+  "My <span class='highlight'>Love</span> 🎀💞",
+  "May God bless you 🙏🍀",
+  "And give you endless happiness 💕",
+  "I love you ❤️",
+  "And I will always love you 💐❤️"
+];
+let l = 0, c = 0;
+function startTypewriter() {
+  setTimeout(typeWriter, 1000);
+}
+function typeWriter() {
+  if (l < lines.length) {
+    if (lines[l].charAt(c) === '<') {
+      let tag = '';
+      while (lines[l].charAt(c) !== '>' && c < lines[l].length) {
+        tag += lines[l].charAt(c);
+        c++;
+      }
+      tag += '>';
+      c++;
+      textEl.innerHTML += tag;
+      setTimeout(typeWriter, 10); 
+    } else if (c < lines[l].length) {
+      textEl.innerHTML += lines[l][c++];
+      setTimeout(typeWriter, 60);
+    } else {
+      textEl.innerHTML += "<br>";
+      c = 0;
+      l++;
+      setTimeout(typeWriter, 800);
     }
+  }
 }
 
-// ------------------ SMOKE ------------------
-class Smoke{
-    constructor(x,y){
-        this.x=x; this.y=y;
-        this.size=Math.random()*10+5;
-        this.opacity=0.8;
-        this.vx=(Math.random()-0.5)*1;
-        this.vy=-Math.random()*1.5-0.5;
-    }
-    update(){ this.x+=this.vx; this.y+=this.vy; this.size+=0.1; this.opacity-=0.01; }
-    draw(){ ctx.fillStyle=`rgba(255,255,255,${this.opacity})`; ctx.beginPath(); ctx.arc(this.x,this.y,this.size,0,Math.PI*2); ctx.fill(); }
-}
+/* ===== DRAWING LOGIC ===== */
+let candles = [];
+let cakeY = 300;
+let cakeVel = 0;
+let bounceT = 0;
+let hearts = [];
+let confetti = [];
+let smoke = [];
+let sparkles = [];
 
-// ------------------ PARTY POPPER CONFETTI ------------------
-class Confetti{
-    constructor(){ 
-        this.x=Math.random()*canvas.width; 
-        this.y=Math.random()*-canvas.height; 
-        this.size=Math.random()*6+4; 
-        this.color=`hsl(${Math.random()*360},100%,50%)`; 
-        this.vx=(Math.random()-0.5)*2; 
-        this.vy=Math.random()*3+2; 
-    }
-    update(){ this.x+=this.vx; this.y+=this.vy; if(this.y>canvas.height)this.y=-10; }
-    draw(){ ctx.fillStyle=this.color; ctx.beginPath(); ctx.arc(this.x,this.y,this.size,0,Math.PI*2); ctx.fill(); }
-}
-let confettiParticles=[];
-for(let i=0;i<150;i++) confettiParticles.push(new Confetti());
-
-// ------------------ ANIMATE ------------------
-function animate(){
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-
-    // hearts
-   hearts = hearts.filter(h => h.y >= -20);
-
-
-    // cake
-    drawCake();
-
-    // smoke
-    smokeParticles.forEach((p,i)=>{
-        p.update(); p.draw(); if(p.opacity<=0) smokeParticles.splice(i,1);
+function initCandles() {
+  candles = [];
+  const spacing = 24 * scale;
+  const cx = width / 2;
+  for(let i=0; i<6; i++) {
+    candles.push({
+      x: cx - ((6-1)*spacing)/2 + i*spacing,
+      lit: true
     });
-
-    // confetti
-    confettiParticles.forEach(p=>{ p.update(); p.draw(); });
-
-    requestAnimationFrame(animate);
+  }
 }
-animate();
-setInterval(spawnHeart,200);
 
-// ------------------ BLOW CANDLE ------------------
-canvas.addEventListener("click",(e)=>{
-    const cx = canvas.width/2;
-    const cy = canvas.height/2 + 100;
-    if(e.clientX>cx-75 && e.clientX<cx+75 && e.clientY>cy-50 && e.clientY<cy+50){
-        flameVisible=false;
-        for(let i=0;i<50;i++) smokeParticles.push(new Smoke(cx, cy-80));
+function drawCake() {
+  const cx = width/2;
+  
+  // CAKE POSITION: MOVED LOWER (Mobile 80%, Desktop 68%)
+  const cy = width < 600 ? height * 0.80 : height * 0.68;
+  
+  // Drop animation
+  if (!state.cakeLanded) {
+    cakeVel += 1.5;
+    cakeY -= cakeVel;
+    if (cakeY <= 0) {
+      cakeY = 0;
+      cakeVel = -cakeVel * 0.4;
+      if (Math.abs(cakeVel) < 1) state.cakeLanded = true;
     }
-});
+  } else {
+    bounceT += 0.003;
+    cakeY = Math.sin(bounceT) * 8;
+  }
 
-// ------------------ RESIZE ------------------
-window.addEventListener('resize', ()=>{
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-});
+  const actualY = cy + cakeY;
+  const s = scale;
+
+  // Layers
+  ctx.fillStyle = '#ff9a9e';
+  ctx.fillRect(cx - 90*s, actualY, 180*s, 80*s);
+  
+  ctx.fillStyle = '#fecaca';
+  ctx.fillRect(cx - 75*s, actualY - 50*s, 150*s, 60*s);
+  
+  ctx.fillStyle = '#fff0f5'; // Icing
+  ctx.fillRect(cx - 75*s, actualY - 50*s, 150*s, 15*s);
+  // Drips
+  ctx.beginPath();
+  ctx.moveTo(cx - 75*s, actualY - 35*s);
+  ctx.lineTo(cx + 75*s, actualY - 35*s);
+  for(let i=0; i<5; i++) ctx.quadraticCurveTo(cx-70*s+(i*30*s), actualY-20*s, cx-65*s+(i*30*s), actualY-35*s);
+  ctx.fill();
+
+  ctx.fillStyle = '#fad0c4';
+  ctx.fillRect(cx - 60*s, actualY - 90*s, 120*s, 50*s);
+
+  // Candles
+  candles.forEach(c => {
+    const cY = actualY - 90*s;
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(c.x - 3*s, cY - 25*s, 6*s, 25*s);
+    ctx.fillStyle = '#ff0055';
+    ctx.fillRect(c.x - 3*s, cY - 15*s, 6*s, 5*s);
+
+    if (c.lit) {
+      ctx.fillStyle = '#333';
+      ctx.fillRect(c.x - 1*s, cY - 27*s, 2*s, 4*s);
+      ctx.fillStyle = Math.random() > 0.5 ? 'orange' : 'yellow';
+      ctx.beginPath();
+      ctx.moveTo(c.x, cY - 27*s);
+      ctx.lineTo(c.x - 4*s, cY - 45*s);
+      ctx.lineTo(c.x + 4*s, cY - 45*s);
+      ctx.fill();
+    }
+  });
+
+  // HAT ASIDE (Positioned to the right side of top layer)
+  ctx.save();
+  // Move to the right edge of the top layer
+  ctx.translate(cx + 65*s, actualY - 90*s); 
+  ctx.scale(s, s);
+  ctx.fillStyle = '#4fc3f7';
+  ctx.beginPath();
+  ctx.moveTo(0, -80); 
+  ctx.lineTo(35, -30); 
+  ctx.lineTo(-35, -30); 
+  ctx.fill();
+  ctx.fillStyle = 'white';
+  ctx.beginPath(); 
+  ctx.arc(0, -30, 12, 0, Math.PI*2); 
+  ctx.fill();
+  // Add polka dots
+  ctx.fillStyle = 'rgba(255,255,255,0.4)';
+  ctx.beginPath(); ctx.arc(-10, -60, 4, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(15, -50, 3, 0, Math.PI*2); ctx.fill();
+  ctx.restore();
+
+  // Gift
+  if (state.giftVisible) {
+    ctx.fillStyle = "#E91E63";
+    ctx.fillRect(cx - 40*s, actualY + 40*s, 80*s, 50*s);
+    ctx.fillStyle = "#FFD54F";
+    ctx.fillRect(cx - 5*s, actualY + 40*s, 10*s, 50*s);
+    
+    if (state.giftOpen) {
+      ctx.fillStyle = "white";
+      ctx.font = "bold 25px 'Sacramento'";
+      ctx.textAlign = "center";
+      ctx.fillText("Make a Wish! ✨", cx, actualY - 130*s);
+      ctx.font = "14px 'Poppins'";
+      ctx.fillText("I love you!", cx, actualY - 110*s);
+    }
+  }
+}
+
+/* ===== PARTICLES ===== */
+class Particle {
+  constructor(type, x, y) {
+    this.type = type;
+    this.x = x || Math.random()*width;
+    this.y = y || height + 30;
+    this.vx = (Math.random()-0.5)*4;
+    this.vy = (Math.random()*-2) - 1;
+    this.size = Math.random()*5 + 2;
+    this.life = 100;
+    if(type === 'confetti') {
+      this.y = Math.random()*-height;
+      this.vy = Math.random()*3+2;
+      this.color = `hsl(${Math.random()*360},100%,60%)`;
+    } else if (type === 'heart') {
+      this.v = Math.random()*1.5+0.5;
+      this.color = 'pink';
+    } else if (type === 'sparkle') {
+      this.color = `hsl(${Math.random()*60 + 40}, 100%, 70%)`;
+    }
+  }
+  update() {
+    this.x += this.vx;
+    if(this.type === 'heart') {
+      this.y -= this.v;
+    } else if (this.type === 'sparkle') {
+      this.y += this.vy;
+      this.vy += 0.1; // gravity
+      this.life--;
+    } else {
+      this.y += this.vy;
+      if(this.y > height) this.y = -10;
+    }
+    if(this.type === 'smoke') {
+      this.size += 0.1;
+      this.life -= 1;
+      this.vy = -1;
+    }
+  }
+  draw() {
+    ctx.fillStyle = this.color;
+    ctx.beginPath();
+    if(this.type === 'confetti') {
+      ctx.fillRect(this.x, this.y, this.size, this.size);
+    } else if (this.type === 'heart') {
+      ctx.moveTo(this.x, this.y);
+      ctx.bezierCurveTo(this.x-10, this.y-10, this.x-25, this.y+10, this.x, this.y+25);
+      ctx.bezierCurveTo(this.x+25, this.y+10, this.x+10, this.y-10, this.x, this.y);
+    } else {
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
+    }
+    ctx.fill();
+  }
+}
+
+// Init particles
+for(let i=0; i<100; i++) confetti.push(new Particle('confetti'));
+
+/* ===== BLOW CANDLES ===== */
+function blowCandles() {
+  if (!state.started || state.candlesBlown || !state.cakeLanded) return;
+  
+  state.candlesBlown = true;
+  hintEl.innerHTML = "Yay! 🎉 Happy Birthday!";
+  hintEl.style.background = "rgba(76,175,80,0.7)";
+
+  // Smoke and sparkles
+  candles.forEach(c => {
+    if(c.lit) {
+      c.lit = false;
+      for(let k=0; k<15; k++) {
+        smoke.push(new Particle('smoke', c.x, height*0.8 + cakeY - 90*scale)); // Height adjusted
+        sparkles.push(new Particle('sparkle', c.x, height*0.8 + cakeY - 90*scale));
+      }
+    }
+  });
+
+  setTimeout(() => state.giftVisible = true, 1000);
+  setTimeout(() => state.giftOpen = true, 1500);
+}
+
+/* ===== ANIMATE LOOP ===== */
+setInterval(() => {
+  if(state.started) hearts.push(new Particle('heart'));
+}, 300);
+
+function animate() {
+  ctx.clearRect(0,0,width,height);
+  
+  drawCake();
+
+  // Draw particles
+  [...hearts, ...confetti, ...smoke, ...sparkles].forEach(p => {
+    p.update(); p.draw();
+  });
+  
+  // Filter dead particles
+  hearts = hearts.filter(h => h.y > -50);
+  smoke = smoke.filter(s => s.life > 0);
+  sparkles = sparkles.filter(s => s.life > 0);
+  
+  if(state.started) requestAnimationFrame(animate);
+}
+
 </script>
 </body>
 </html>
