@@ -50,15 +50,13 @@ body {
 </style>
 </head>
 <body>
+<audio id="music" loop>
+  <source src="aud.mp3" type="audio/mpeg">
+</audio>
 
 <div id="background">
     <img src="img2.png" alt="Background" style="width:100%; height:100%; object-fit:cover;">
 </div>
-
-<audio id="music" loop preload="auto">
-  <source src="aud.mp3" type="audio/mpeg">
-</audio>
-
 
 <canvas id="canvas"></canvas>
 
@@ -99,7 +97,7 @@ document.addEventListener("keydown", startAudio, { once: true });
 
 // ------------------ TYPEWRITER TEXT ------------------
 const lines = [
-    "Happy Birthday 🎂🎈",
+    "Happy Birthday Goluuu🎂🎈",
     "My Love 🎀💞",
     "May God bless you 🙏🍀",
     "And give you endless happiness 💕",
@@ -197,14 +195,8 @@ function animate(){
     ctx.clearRect(0,0,canvas.width,canvas.height);
 
     // hearts
-    hearts.forEach((h,i)=>{
-        ctx.fillStyle="rgba(255,77,109,0.8)";
-        ctx.beginPath();
-        ctx.arc(h.x,h.y,6*h.s,0,Math.PI*2);
-        ctx.fill();
-        h.y-=h.v*2;
-        if(h.y<-20) hearts.splice(i,1);
-    });
+   hearts = hearts.filter(h => h.y >= -20);
+
 
     // cake
     drawCake();
