@@ -13,22 +13,8 @@
     font-family: 'Poppins', sans-serif;
     color: white;
     height: 100vh;
-    background: #1a0b14;
+    background: linear-gradient(135deg, #2a0845 0%, #6441A5 100%);
     touch-action: manipulation;
-  }
-
-  /* Background */
-  #background {
-    position: fixed;
-    inset: 0;
-    z-index: -2;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    filter: brightness(0.4);
-    background-image: url('https://images.unsplash.com/photo-1513151233558-d860c5398176?q=80&w=2070&auto=format&fit=crop'); 
-    background-size: cover;
-    background-position: center;
   }
 
   /* Canvas */
@@ -39,7 +25,7 @@
     display: block;
   }
 
-  /* Start Overlay (Required for Browser Audio Policy) */
+  /* Start Overlay */
   #intro-overlay {
     position: fixed;
     inset: 0;
@@ -50,47 +36,50 @@
     align-items: center;
     justify-content: center;
     padding: 20px;
-    cursor: pointer; /* Click anywhere works */
+    cursor: pointer;
   }
 
   .start-btn {
     background: linear-gradient(135deg, #ff6b6b, #ff8e53);
     border: none;
-    padding: 25px 70px;
+    padding: 20px 60px;
     color: white;
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     font-weight: 600;
     border-radius: 50px;
     cursor: pointer;
-    box-shadow: 0 10px 40px rgba(255, 107, 107, 0.6);
+    box-shadow: 0 10px 30px rgba(255, 107, 107, 0.4);
     font-family: 'Poppins', sans-serif;
-    animation: pulse 2s infinite;
+    transition: transform 0.3s;
+  }
+  .start-btn:hover {
+    transform: scale(1.05);
   }
 
-  /* Text Container */
+  /* Text Container (Left side on desktop) */
   #text-container {
     position: absolute;
-    top: 8%; /* Moved up slightly since cake is lower */
-    width: 90%;
-    max-width: 600px;
-    left: 50%;
-    transform: translateX(-50%);
-    text-align: center;
+    top: 45%;
+    left: 8%;
+    transform: translateY(-50%);
+    width: 35%;
+    max-width: 450px;
+    text-align: left;
     z-index: 10;
     background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(4px);
-    padding: 15px;
-    border-radius: 15px;
+    backdrop-filter: blur(8px);
+    padding: 30px;
+    border-radius: 20px;
     border: 1px solid rgba(255, 255, 255, 0.2);
     min-height: 120px;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     pointer-events: none;
   }
 
-  #text { font-size: 1.3rem; line-height: 1.6; font-weight: 300; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
-  .highlight { font-family: 'Sacramento', cursive; color: #ff9ff3; font-size: 1.8rem; text-shadow: 0 0 10px rgba(255, 154, 243, 0.8); }
+  #text { font-size: 1.4rem; line-height: 1.6; font-weight: 300; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+  .highlight { font-family: 'Sacramento', cursive; color: #ff9ff3; font-size: 2.2rem; font-weight: 600; text-shadow: 0 0 15px rgba(255, 154, 243, 0.6); }
 
   /* Hints */
   #hint {
@@ -99,39 +88,194 @@
     width: 100%;
     text-align: center;
     z-index: 10;
-    font-size: 1rem;
-    background: rgba(0,0,0,0.6);
-    padding: 12px 0;
+    font-size: 1.1rem;
+    background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(4px);
+    padding: 15px 0;
     pointer-events: none;
     color: #fff;
     font-weight: 500;
+    transition: background 0.3s;
   }
 
-  @keyframes pulse {
-    0% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.7); }
-    70% { box-shadow: 0 0 0 20px rgba(255, 107, 107, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0); }
+  /* Knife */
+  #knife {
+    position: absolute;
+    font-size: 4rem;
+    display: none;
+    z-index: 30;
+    cursor: grab;
+    user-select: none;
+    filter: drop-shadow(0 10px 10px rgba(0,0,0,0.5));
   }
 
-  @media (max-width: 600px) {
-    #text { font-size: 1rem; line-height: 1.4; }
-    .highlight { font-size: 1.5rem; }
+  /* Wish Container (beside cake, right side) */
+  #wish-container {
+    position: absolute;
+    right: 8%;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 20;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    opacity: 0;
+    transition: opacity 1s ease-in;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .wish-btn {
+    background: linear-gradient(135deg, #e056fd, #be2edd);
+    border: none;
+    padding: 15px 35px;
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 600;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 5px 20px rgba(190, 46, 221, 0.5);
+    font-family: 'Poppins', sans-serif;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+
+  .wish-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(190, 46, 221, 0.7);
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(-50%); }
+    50% { transform: translateY(-55%); }
+  }
+
+  /* Modal */
+  #wish-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    z-index: 99999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .modal-content {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 40px;
+    width: 90%;
+    max-width: 500px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  }
+
+  .close-btn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #ccc;
+    transition: color 0.3s;
+  }
+  
+  .close-btn:hover { color: white; }
+
+  .modal-content h2 {
+    margin-bottom: 20px;
+    font-family: 'Sacramento', cursive;
+    font-size: 3rem;
+    color: #ff9ff3;
+  }
+
+  .modal-content textarea {
+    width: 100%;
+    height: 120px;
+    background: rgba(0,0,0,0.2);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 10px;
+    padding: 15px;
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1rem;
+    resize: none;
+    margin-bottom: 20px;
+  }
+  .modal-content textarea:focus {
+    outline: none;
+    border-color: #e056fd;
+    background: rgba(0,0,0,0.3);
+  }
+
+  .submit-wish-btn {
+    background: #ff9ff3;
+    color: #2a0845;
+    border: none;
+    padding: 15px 40px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .submit-wish-btn:hover {
+    background: white;
+    transform: scale(1.05);
+  }
+
+  @media (max-width: 768px) {
+    #text-container {
+      top: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      text-align: center;
+      justify-content: center;
+      padding: 15px;
+    }
+    #text { font-size: 1.1rem; line-height: 1.5; }
+    .highlight { font-size: 1.6rem; }
     #hint { font-size: 0.85rem; }
-    .start-btn { padding: 20px 50px; font-size: 1.5rem; }
+    
+    #wish-container {
+      right: 50%;
+      top: auto;
+      bottom: 2%;
+      transform: translateX(50%);
+      animation: float-mobile 3s ease-in-out infinite;
+    }
+    @keyframes float-mobile {
+      0%, 100% { transform: translateX(50%) translateY(0); }
+      50% { transform: translateX(50%) translateY(-10px); }
+    }
+    .modal-content {
+      padding: 25px;
+      width: 95%;
+    }
+    .modal-content h2 {
+      font-size: 2.2rem;
+    }
+    #knife {
+      font-size: 3rem;
+    }
   }
 </style>
 </head>
 <body>
 
-<!-- OVERLAY (Starts Music & Mic) -->
+<!-- OVERLAY -->
 <div id="intro-overlay" onclick="startCelebration()">
-  <h1 style="margin-bottom: 30px; font-weight: 300; font-size: 2.5rem; color: #fff;">🎂 Happy Birthday! 🎂</h1>
+  <h1 style="margin-bottom: 30px; font-weight: 300; font-size: 2.5rem; color: #fff; font-family: 'Sacramento', cursive;">Happy Birthday!</h1>
   <button class="start-btn">Enter Party 🎉</button>
-  <p style="margin-top: 20px; color: #aaa; font-size: 0.9rem;">(Please allow microphone access to blow candles!)</p>
+  <p style="margin-top: 20px; color: #ccc; font-size: 0.9rem;">(Please allow microphone access to blow candles!)</p>
 </div>
-
-<!-- BACKGROUND -->
-<div id="background"></div>
 
 <!-- CANVAS -->
 <canvas id="canvas"></canvas>
@@ -142,7 +286,27 @@
 </div>
 
 <!-- HINT -->
-<div id="hint">🎤 Blow into the microphone or tap the cake!</div>
+<div id="hint">🎤 Blow into the microphone!</div>
+
+<!-- KNIFE -->
+<div id="knife">🔪</div>
+
+<!-- WISH CONTAINER -->
+<div id="wish-container">
+  <button class="wish-btn" onclick="openWishModal()">Make a Wish ✨</button>
+</div>
+
+<!-- WISH MODAL -->
+<div id="wish-modal">
+  <div class="modal-content">
+    <span class="close-btn" onclick="closeWishModal()">&times;</span>
+    <h2>Make Your Wish</h2>
+    <form id="wish-form" onsubmit="sendWish(event)">
+      <textarea id="wish-input" name="wish" placeholder="Type your beautiful wish here..." required></textarea>
+      <button type="submit" class="submit-wish-btn">Send Wish 💌</button>
+    </form>
+  </div>
+</div>
 
 <!-- AUDIO -->
 <audio id="music" loop>
@@ -155,11 +319,14 @@ let canvas, ctx, width, height, scale;
 let audio, textEl, hintEl, overlay;
 let state = {
   started: false,
-  cakeLanded: false,
   candlesBlown: false,
-  giftVisible: false,
-  giftOpen: false
+  cakeCut: false,
+  landed: [false, false, false]
 };
+
+// Layer independent logic (Base, Mid, Top)
+let layerY = [-1000, -1000, -1000];
+let layerVel = [0, 0, 0];
 
 /* ===== INITIALIZATION ===== */
 window.onload = function() {
@@ -172,10 +339,7 @@ window.onload = function() {
   
   resize();
   window.addEventListener("resize", resize);
-  
-  // Interaction Listeners
-  canvas.addEventListener("click", blowCandles);
-  canvas.addEventListener("touchstart", blowCandles);
+  initKnifeDrag();
 };
 
 function resize() {
@@ -187,12 +351,8 @@ function resize() {
 
 /* ===== MAIN START FUNCTION ===== */
 function startCelebration() {
-  console.log("Starting Celebration...");
-  
-  // 1. Hide Overlay
   overlay.style.display = "none";
   
-  // 2. Audio Fade In
   audio.volume = 0;
   audio.play().then(() => {
     let v = 0;
@@ -203,24 +363,43 @@ function startCelebration() {
     }, 100);
   }).catch(e => console.log("Audio play failed", e));
   
-  // 3. Set State
   state.started = true;
-  
-  // 4. Start Typing
   startTypewriter();
-  
-  // 5. Start Animation Loop
   animate();
-  
-  // 6. Initialize Microphone
   initMicrophone();
+}
+
+/* ===== MODAL LOGIC ===== */
+function openWishModal() {
+  const modal = document.getElementById('wish-modal');
+  modal.style.display = 'flex';
+  setTimeout(() => modal.style.opacity = '1', 10);
+}
+
+function closeWishModal() {
+  const modal = document.getElementById('wish-modal');
+  modal.style.opacity = '0';
+  setTimeout(() => modal.style.display = 'none', 300);
+}
+
+function sendWish(e) {
+  e.preventDefault();
+  const wishText = document.getElementById("wish-input").value;
+  const email = "pushkarchaudhary256@gmail.com";
+  const subject = encodeURIComponent("New Birthday Wish!");
+  const body = encodeURIComponent(wishText);
+  
+  window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+  
+  closeWishModal();
+  hintEl.innerHTML = "Wish prepared! Check your email app to send it. ✨";
+  hintEl.style.background = "rgba(76,175,80,0.7)";
 }
 
 /* ===== MICROPHONE LOGIC ===== */
 function initMicrophone() {
-  // Check if browser supports it
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-    hintEl.innerText = "Tap the cake to blow candles! 🎂";
+    hintEl.innerText = "Microphone access is needed to blow candles! 🎤";
     return;
   }
 
@@ -239,21 +418,17 @@ function initMicrophone() {
       
       function detectSound() {
         analyser.getByteFrequencyData(dataArray);
-        
-        // Calculate average volume
         let sum = 0;
         for(let i = 0; i < bufferLength; i++) {
           sum += dataArray[i];
         }
         let average = sum / bufferLength;
         
-        // Dynamic threshold: if volume spikes significantly above history
         volumeHistory.push(average);
         if(volumeHistory.length > 20) volumeHistory.shift();
         
         let averageHistory = volumeHistory.reduce((a,b) => a+b) / volumeHistory.length;
         
-        // Threshold: needs to be significantly louder than background noise
         if (average > averageHistory + 20 && average > 15) {
            blowCandles();
         }
@@ -261,11 +436,10 @@ function initMicrophone() {
         requestAnimationFrame(detectSound);
       }
       detectSound();
-      
     })
     .catch(err => {
       console.log("Microphone access denied or error:", err);
-      hintEl.innerText = "Tap the cake to blow candles! 🎂";
+      hintEl.innerText = "Please allow microphone access to blow candles! 🎤";
     });
 }
 
@@ -276,7 +450,7 @@ const lines = [
   "May God bless you 🙏🍀",
   "And give you endless happiness 💕",
   "I love you ❤️",
-  "And I will always love you 💐❤️"
+  "And will always love you 💐❤️"
 ];
 let l = 0, c = 0;
 function startTypewriter() {
@@ -308,13 +482,10 @@ function typeWriter() {
 
 /* ===== DRAWING LOGIC ===== */
 let candles = [];
-let cakeY = 300;
-let cakeVel = 0;
-let bounceT = 0;
-let hearts = [];
 let confetti = [];
 let smoke = [];
 let sparkles = [];
+let hearts = [];
 
 function initCandles() {
   candles = [];
@@ -328,51 +499,36 @@ function initCandles() {
   }
 }
 
-function drawCake() {
-  const cx = width/2;
-  
-  // CAKE POSITION: MOVED LOWER (Mobile 80%, Desktop 68%)
-  const cy = width < 600 ? height * 0.80 : height * 0.68;
-  
-  // Drop animation
-  if (!state.cakeLanded) {
-    cakeVel += 1.5;
-    cakeY -= cakeVel;
-    if (cakeY <= 0) {
-      cakeY = 0;
-      cakeVel = -cakeVel * 0.4;
-      if (Math.abs(cakeVel) < 1) state.cakeLanded = true;
-    }
-  } else {
-    bounceT += 0.003;
-    cakeY = Math.sin(bounceT) * 8;
-  }
+function drawFullCakeElements(cx, cy, s) {
+  const baseActualY = cy + layerY[0];
+  const midActualY = cy - 50*s + layerY[1];
+  const topActualY = cy - 90*s + layerY[2];
 
-  const actualY = cy + cakeY;
-  const s = scale;
-
-  // Layers
+  // Base Layer
   ctx.fillStyle = '#ff9a9e';
-  ctx.fillRect(cx - 90*s, actualY, 180*s, 80*s);
+  ctx.fillRect(cx - 90*s, baseActualY, 180*s, 80*s);
   
+  // Middle Layer
   ctx.fillStyle = '#fecaca';
-  ctx.fillRect(cx - 75*s, actualY - 50*s, 150*s, 60*s);
-  
+  ctx.fillRect(cx - 75*s, midActualY, 150*s, 60*s);
   ctx.fillStyle = '#fff0f5'; // Icing
-  ctx.fillRect(cx - 75*s, actualY - 50*s, 150*s, 15*s);
-  // Drips
+  ctx.fillRect(cx - 75*s, midActualY, 150*s, 15*s);
+  // Middle Drips
   ctx.beginPath();
-  ctx.moveTo(cx - 75*s, actualY - 35*s);
-  ctx.lineTo(cx + 75*s, actualY - 35*s);
-  for(let i=0; i<5; i++) ctx.quadraticCurveTo(cx-70*s+(i*30*s), actualY-20*s, cx-65*s+(i*30*s), actualY-35*s);
+  ctx.moveTo(cx - 75*s, midActualY + 15*s);
+  ctx.lineTo(cx + 75*s, midActualY + 15*s);
+  for(let i=0; i<5; i++) {
+    ctx.quadraticCurveTo(cx-70*s+(i*30*s), midActualY+30*s, cx-65*s+(i*30*s), midActualY+15*s);
+  }
   ctx.fill();
 
+  // Top Layer
   ctx.fillStyle = '#fad0c4';
-  ctx.fillRect(cx - 60*s, actualY - 90*s, 120*s, 50*s);
+  ctx.fillRect(cx - 60*s, topActualY, 120*s, 50*s);
 
   // Candles
   candles.forEach(c => {
-    const cY = actualY - 90*s;
+    const cY = topActualY;
     ctx.fillStyle = '#fff';
     ctx.fillRect(c.x - 3*s, cY - 25*s, 6*s, 25*s);
     ctx.fillStyle = '#ff0055';
@@ -390,10 +546,9 @@ function drawCake() {
     }
   });
 
-  // HAT ASIDE (Positioned to the right side of top layer)
+  // Hat
   ctx.save();
-  // Move to the right edge of the top layer
-  ctx.translate(cx + 65*s, actualY - 90*s); 
+  ctx.translate(cx + 65*s, topActualY); 
   ctx.scale(s, s);
   ctx.fillStyle = '#4fc3f7';
   ctx.beginPath();
@@ -405,28 +560,54 @@ function drawCake() {
   ctx.beginPath(); 
   ctx.arc(0, -30, 12, 0, Math.PI*2); 
   ctx.fill();
-  // Add polka dots
   ctx.fillStyle = 'rgba(255,255,255,0.4)';
   ctx.beginPath(); ctx.arc(-10, -60, 4, 0, Math.PI*2); ctx.fill();
   ctx.beginPath(); ctx.arc(15, -50, 3, 0, Math.PI*2); ctx.fill();
   ctx.restore();
+}
 
-  // Gift
-  if (state.giftVisible) {
-    ctx.fillStyle = "#E91E63";
-    ctx.fillRect(cx - 40*s, actualY + 40*s, 80*s, 50*s);
-    ctx.fillStyle = "#FFD54F";
-    ctx.fillRect(cx - 5*s, actualY + 40*s, 10*s, 50*s);
-    
-    if (state.giftOpen) {
-      ctx.fillStyle = "white";
-      ctx.font = "bold 25px 'Sacramento'";
-      ctx.textAlign = "center";
-      ctx.fillText("Make a Wish! ✨", cx, actualY - 130*s);
-      ctx.font = "14px 'Poppins'";
-      ctx.fillText("I love you!", cx, actualY - 110*s);
-    }
+function drawCake() {
+  const cx = width/2;
+  const cy = width < 768 ? height * 0.65 : height * 0.68;
+  const s = scale;
+
+  // Step-wise drop animation
+  if (!state.landed[0]) {
+    layerVel[0] += 1.5; layerY[0] += layerVel[0];
+    if (layerY[0] >= 0) { layerY[0] = 0; layerVel[0] *= -0.4; if (Math.abs(layerVel[0]) < 1.5) state.landed[0] = true; }
+  } else if (!state.landed[1]) {
+    layerVel[1] += 1.5; layerY[1] += layerVel[1];
+    if (layerY[1] >= 0) { layerY[1] = 0; layerVel[1] *= -0.4; if (Math.abs(layerVel[1]) < 1.5) state.landed[1] = true; }
+  } else if (!state.landed[2]) {
+    layerVel[2] += 1.5; layerY[2] += layerVel[2];
+    if (layerY[2] >= 0) { layerY[2] = 0; layerVel[2] *= -0.4; if (Math.abs(layerVel[2]) < 1.5) state.landed[2] = true; }
   }
+
+  // Left Half
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(0, 0, cx, height);
+  ctx.clip();
+  drawFullCakeElements(cx, cy, s);
+  ctx.restore();
+
+  // Sponge filling when cut
+  if (state.cakeCut) {
+    ctx.fillStyle = '#ffdfba'; 
+    ctx.fillRect(cx - 2*s, cy - 90*s, 3*s, 170*s); 
+    ctx.fillRect(cx + 30*s, cy - 90*s + 10*s, 4*s, 170*s); 
+  }
+
+  // Right Half (Shifted if cut)
+  ctx.save();
+  if (state.cakeCut) {
+    ctx.translate(30*s, 10*s);
+  }
+  ctx.beginPath();
+  ctx.rect(cx, -height, width, height*3);
+  ctx.clip();
+  drawFullCakeElements(cx, cy, s);
+  ctx.restore();
 }
 
 /* ===== PARTICLES ===== */
@@ -439,33 +620,40 @@ class Particle {
     this.vy = (Math.random()*-2) - 1;
     this.size = Math.random()*5 + 2;
     this.life = 100;
-    if(type === 'confetti') {
-      this.y = Math.random()*-height;
-      this.vy = Math.random()*3+2;
+    
+    if (type === 'popper-left') {
+      this.x = Math.random() * 50;
+      this.y = -20;
+      this.vx = Math.random()*15 + 5;
+      this.vy = Math.random()*15 - 2;
       this.color = `hsl(${Math.random()*360},100%,60%)`;
+      this.type = 'confetti';
+    } else if (type === 'popper-right') {
+      this.x = width - Math.random() * 50;
+      this.y = -20;
+      this.vx = -Math.random()*15 - 5;
+      this.vy = Math.random()*15 - 2;
+      this.color = `hsl(${Math.random()*360},100%,60%)`;
+      this.type = 'confetti';
     } else if (type === 'heart') {
       this.v = Math.random()*1.5+0.5;
       this.color = 'pink';
-    } else if (type === 'sparkle') {
-      this.color = `hsl(${Math.random()*60 + 40}, 100%, 70%)`;
     }
   }
   update() {
     this.x += this.vx;
     if(this.type === 'heart') {
       this.y -= this.v;
-    } else if (this.type === 'sparkle') {
+    } else if (this.type === 'smoke') {
       this.y += this.vy;
-      this.vy += 0.1; // gravity
-      this.life--;
-    } else {
+      this.size += 0.2;
+      this.life -= 2;
+      this.vy = -1.5;
+      this.vx *= 0.95; 
+    } else if (this.type === 'confetti') {
       this.y += this.vy;
-      if(this.y > height) this.y = -10;
-    }
-    if(this.type === 'smoke') {
-      this.size += 0.1;
-      this.life -= 1;
-      this.vy = -1;
+      this.vy += 0.2; // gravity
+      if(this.y > height) this.life = 0;
     }
   }
   draw() {
@@ -477,37 +665,139 @@ class Particle {
       ctx.moveTo(this.x, this.y);
       ctx.bezierCurveTo(this.x-10, this.y-10, this.x-25, this.y+10, this.x, this.y+25);
       ctx.bezierCurveTo(this.x+25, this.y+10, this.x+10, this.y-10, this.x, this.y);
-    } else {
+    } else if (this.type === 'smoke') {
+      ctx.fillStyle = `rgba(220, 220, 220, ${Math.max(0, this.life / 100)})`;
       ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
     }
     ctx.fill();
   }
 }
 
-// Init particles
-for(let i=0; i<100; i++) confetti.push(new Particle('confetti'));
-
-/* ===== BLOW CANDLES ===== */
+/* ===== CELEBRATION LOGIC ===== */
 function blowCandles() {
-  if (!state.started || state.candlesBlown || !state.cakeLanded) return;
+  if (!state.started || state.candlesBlown || !state.landed[2]) return;
   
   state.candlesBlown = true;
   hintEl.innerHTML = "Yay! 🎉 Happy Birthday!";
-  hintEl.style.background = "rgba(76,175,80,0.7)";
+  hintEl.style.background = "rgba(76,175,80,0.5)";
 
-  // Smoke and sparkles
+  const cy = width < 768 ? height * 0.65 : height * 0.68;
+  const topActualY = cy - 90*scale + layerY[2];
+
+  // Smoke from candles
   candles.forEach(c => {
     if(c.lit) {
       c.lit = false;
       for(let k=0; k<15; k++) {
-        smoke.push(new Particle('smoke', c.x, height*0.8 + cakeY - 90*scale)); // Height adjusted
-        sparkles.push(new Particle('sparkle', c.x, height*0.8 + cakeY - 90*scale));
+        smoke.push(new Particle('smoke', c.x, topActualY - 25*scale)); 
       }
     }
   });
 
-  setTimeout(() => state.giftVisible = true, 1000);
-  setTimeout(() => state.giftOpen = true, 1500);
+  // Party Poppers
+  setTimeout(() => {
+    for(let i=0; i<150; i++) {
+      confetti.push(new Particle('popper-left'));
+      confetti.push(new Particle('popper-right'));
+    }
+  }, 1000);
+
+  // Present Knife
+  setTimeout(() => {
+    hintEl.innerHTML = "Drag the knife down the cake to cut it! 🔪";
+    const knife = document.getElementById('knife');
+    knife.style.display = 'block';
+    
+    // Force reflow
+    void knife.offsetWidth;
+    
+    knife.style.transition = 'top 0.4s ease-in, left 0.4s ease-in, transform 0.4s ease-in, opacity 0.4s ease-out';
+    knife.style.opacity = '1';
+    knife.style.left = '50%';
+    knife.style.top = '85%';
+    knife.style.transform = 'translate(-50%, -50%)';
+  }, 2500);
+}
+
+let isDraggingKnife = false;
+
+function initKnifeDrag() {
+  const knife = document.getElementById('knife');
+  
+  knife.addEventListener('mousedown', startDrag);
+  knife.addEventListener('touchstart', startDrag, {passive: false});
+
+  function startDrag(e) {
+    if (state.cakeCut || !state.candlesBlown) return;
+    isDraggingKnife = true;
+    knife.style.transition = 'none'; // Follow instantly
+    
+    document.addEventListener('mousemove', drag);
+    document.addEventListener('touchmove', drag, {passive: false});
+    document.addEventListener('mouseup', endDrag);
+    document.addEventListener('touchend', endDrag);
+    
+    drag(e);
+  }
+
+  function drag(e) {
+    if (!isDraggingKnife) return;
+    e.preventDefault(); 
+    
+    let clientX = e.clientX || (e.touches && e.touches[0].clientX);
+    let clientY = e.clientY || (e.touches && e.touches[0].clientY);
+    
+    knife.style.left = clientX + 'px';
+    knife.style.top = clientY + 'px';
+    knife.style.transform = 'translate(-50%, -50%) rotate(-45deg)';
+
+    const cyCake = width < 768 ? height * 0.65 : height * 0.68;
+    const topActualY = cyCake - 90*scale;
+    const bottomActualY = cyCake + 80*scale;
+    
+    // Check if dragging across center of cake
+    if (clientY > topActualY + 20 && clientY < bottomActualY && Math.abs(clientX - width/2) < 60*scale) {
+       triggerCut();
+    }
+  }
+
+  function endDrag() {
+    isDraggingKnife = false;
+    document.removeEventListener('mousemove', drag);
+    document.removeEventListener('touchmove', drag);
+    document.removeEventListener('mouseup', endDrag);
+    document.removeEventListener('touchend', endDrag);
+    
+    if (!state.cakeCut) {
+      const knife = document.getElementById('knife');
+      knife.style.transition = 'top 0.4s ease-in, left 0.4s ease-in, transform 0.4s ease-in, opacity 0.4s ease-out';
+      knife.style.left = '50%';
+      knife.style.top = '85%';
+      knife.style.transform = 'translate(-50%, -50%)';
+    }
+  }
+
+  function triggerCut() {
+    if (state.cakeCut) return;
+    state.cakeCut = true;
+    isDraggingKnife = false;
+    endDrag();
+    
+    const knife = document.getElementById('knife');
+    knife.style.transition = 'all 0.4s ease-out';
+    knife.style.opacity = '0';
+    
+    hintEl.innerHTML = "Make a beautiful wish! ✨";
+    hintEl.style.background = "rgba(233, 30, 99, 0.7)";
+    
+    setTimeout(() => {
+      knife.style.display = 'none';
+      const wishContainer = document.getElementById("wish-container");
+      wishContainer.style.display = "flex";
+      void wishContainer.offsetWidth;
+      wishContainer.style.opacity = "1";
+    }, 400);
+  }
 }
 
 /* ===== ANIMATE LOOP ===== */
@@ -520,15 +810,13 @@ function animate() {
   
   drawCake();
 
-  // Draw particles
-  [...hearts, ...confetti, ...smoke, ...sparkles].forEach(p => {
+  [...hearts, ...confetti, ...smoke].forEach(p => {
     p.update(); p.draw();
   });
   
-  // Filter dead particles
   hearts = hearts.filter(h => h.y > -50);
   smoke = smoke.filter(s => s.life > 0);
-  sparkles = sparkles.filter(s => s.life > 0);
+  confetti = confetti.filter(c => c.life > 0);
   
   if(state.started) requestAnimationFrame(animate);
 }
