@@ -346,6 +346,7 @@ window.onload = function() {
   cats.push(new Cat());
   stickmen.push(new Stickman(width/2 + 200*scale));
   stickmen.push(new Stickman(width/2 - 200*scale));
+  initGifts();
 
   window.addEventListener("resize", resize);
   initKnifeDrag();
@@ -362,17 +363,18 @@ function resize() {
 /* ===== MAIN START FUNCTION ===== */
 function startCelebration() {
   overlay.style.display = "none";
-  
-  audio.volume = 0;
+
+  // Start music immediately at an audible volume, then fade up smoothly
+  audio.volume = 0.3;
   audio.play().then(() => {
-    let v = 0;
+    let v = 0.3;
     const fade = setInterval(() => {
       v += 0.05;
       audio.volume = Math.min(v, 1);
-      if(v>=1) clearInterval(fade);
-    }, 100);
+      if (v >= 1) clearInterval(fade);
+    }, 80);
   }).catch(e => console.log("Audio play failed", e));
-  
+
   state.started = true;
   startTypewriter();
   animate();
@@ -401,8 +403,26 @@ function sendWish(e) {
   const email = wishEmail || "pushkarchaudhary256@gmail.com";
   const subject = encodeURIComponent(`New Birthday Wish from ${wishName}`);
   const body = encodeURIComponent(wishText);
-  
-  window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${email}&su=${subject}&body=${body}`, '_blank');
+
+  // Detect mobile device
+  const isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
+
+  // Create a hidden anchor and click it — this works on mobile (treated as direct user gesture)
+  const link = document.createElement('a');
+
+  if (isMobile) {
+    // mailto: is the most reliable on mobile — OS routes it to the default mail/Gmail app
+    link.href = `mailto:${email}?subject=${subject}&body=${body}`;
+  } else {
+    // On desktop, open Gmail compose in a new tab
+    link.href = `https://mail.google.com/mail/?view=cm&fs=1&to=${email}&su=${subject}&body=${body}`;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+  }
+
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
   
   closeWishModal();
   hintEl.innerHTML = "Wish prepared! Opening Gmail to send it. ✨";
@@ -419,36 +439,49 @@ function initMicrophone() {
   navigator.mediaDevices.getUserMedia({ audio: true })
     .then(stream => {
       const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      const analyser = audioContext.createAnalyser();
-      const microphone = audioContext.createMediaStreamSource(stream);
-      microphone.connect(analyser);
-      
-      analyser.fftSize = 256;
-      const bufferLength = analyser.frequencyBinCount;
-      const dataArray = new Uint8Array(bufferLength);
-      
-      let volumeHistory = [];
-      
-      function detectSound() {
-        analyser.getByteFrequencyData(dataArray);
-        let sum = 0;
-        for(let i = 0; i < bufferLength; i++) {
-          sum += dataArray[i];
+
+      // Desktop browsers start AudioContext in 'suspended' state — must resume it explicitly
+      // (mobile browsers auto-resume after a user gesture, but desktop doesn't always)
+      const startDetection = () => {
+        const analyser = audioContext.createAnalyser();
+        const microphone = audioContext.createMediaStreamSource(stream);
+        microphone.connect(analyser);
+
+        analyser.fftSize = 256;
+        const bufferLength = analyser.frequencyBinCount;
+        const dataArray = new Uint8Array(bufferLength);
+
+        let volumeHistory = [];
+
+        function detectSound() {
+          analyser.getByteFrequencyData(dataArray);
+          let sum = 0;
+          for (let i = 0; i < bufferLength; i++) {
+            sum += dataArray[i];
+          }
+          let average = sum / bufferLength;
+
+          volumeHistory.push(average);
+          if (volumeHistory.length > 20) volumeHistory.shift();
+
+          let averageHistory = volumeHistory.reduce((a, b) => a + b) / volumeHistory.length;
+
+          // Relaxed thresholds: spike of +12 over baseline (was +20), min volume of 10 (was 15)
+          // Laptop mics have more ambient noise that raises the baseline, so a lower delta works better
+          if (average > averageHistory + 12 && average > 10) {
+            blowCandles();
+          }
+
+          requestAnimationFrame(detectSound);
         }
-        let average = sum / bufferLength;
-        
-        volumeHistory.push(average);
-        if(volumeHistory.length > 20) volumeHistory.shift();
-        
-        let averageHistory = volumeHistory.reduce((a,b) => a+b) / volumeHistory.length;
-        
-        if (average > averageHistory + 20 && average > 15) {
-           blowCandles();
-        }
-        
-        requestAnimationFrame(detectSound);
+        detectSound();
+      };
+
+      if (audioContext.state === 'suspended') {
+        audioContext.resume().then(startDetection);
+      } else {
+        startDetection();
       }
-      detectSound();
     })
     .catch(err => {
       console.log("Microphone access denied or error:", err);
@@ -1074,41 +1107,229 @@ class Stickman {
     const s = scale;
     ctx.save();
     ctx.translate(this.x, this.y - this.jumpY);
-    
-    ctx.fillStyle = '#fff';
-    ctx.strokeStyle = '#fff';
-    ctx.lineWidth = 4*s;
+
+    // Glow effect so stickmen stand out against the dark background
+    ctx.shadowColor = '#ff9ff3';
+    ctx.shadowBlur = 12 * s;
+
+    // Head — filled warm skin tone with a bright outline
+    ctx.fillStyle = '#ffe0b2';
+    ctx.strokeStyle = '#ff9ff3';
+    ctx.lineWidth = 3 * s;
     ctx.beginPath();
-    ctx.arc(0, -60*s, 15*s, 0, Math.PI*2);
-    ctx.stroke();
-    
-    ctx.beginPath();
-    ctx.moveTo(0, -45*s);
-    ctx.lineTo(0, -10*s);
+    ctx.arc(0, -60 * s, 15 * s, 0, Math.PI * 2);
+    ctx.fill();
     ctx.stroke();
 
-    const armWave = state.started ? Math.sin((Date.now() + this.danceOffset)/150)*20*s : 0;
+    // Face — eyes and smile
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = '#5c2d00';
+    ctx.beginPath(); ctx.arc(-5*s, -62*s, 2.5*s, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(5*s, -62*s, 2.5*s, 0, Math.PI*2); ctx.fill();
+    ctx.strokeStyle = '#5c2d00';
+    ctx.lineWidth = 1.5 * s;
     ctx.beginPath();
-    ctx.moveTo(0, -35*s);
-    ctx.lineTo(-20*s, -50*s + armWave);
+    ctx.arc(0, -58*s, 5*s, 0.1, Math.PI - 0.1);
     ctx.stroke();
+    ctx.shadowColor = '#ff9ff3';
+    ctx.shadowBlur = 12 * s;
+
+    // Body
+    ctx.strokeStyle = '#ff9ff3';
+    ctx.lineWidth = 4 * s;
     ctx.beginPath();
-    ctx.moveTo(0, -35*s);
-    ctx.lineTo(20*s, -50*s - armWave);
+    ctx.moveTo(0, -45 * s);
+    ctx.lineTo(0, -10 * s);
     ctx.stroke();
 
-    const legBend = state.started ? Math.sin((Date.now() + this.danceOffset)/300)*10*s : 0;
+    // Arms — animated wave
+    const armWave = state.started ? Math.sin((Date.now() + this.danceOffset) / 150) * 20 * s : 0;
+    ctx.strokeStyle = '#ffe0b2';
+    ctx.lineWidth = 3.5 * s;
     ctx.beginPath();
-    ctx.moveTo(0, -10*s);
-    ctx.lineTo(-15*s - legBend, 20*s);
+    ctx.moveTo(0, -35 * s);
+    ctx.lineTo(-22 * s, -50 * s + armWave);
     ctx.stroke();
     ctx.beginPath();
-    ctx.moveTo(0, -10*s);
-    ctx.lineTo(15*s + legBend, 20*s);
+    ctx.moveTo(0, -35 * s);
+    ctx.lineTo(22 * s, -50 * s - armWave);
+    ctx.stroke();
+
+    // Legs — animated bend
+    const legBend = state.started ? Math.sin((Date.now() + this.danceOffset) / 300) * 10 * s : 0;
+    ctx.strokeStyle = '#ff9ff3';
+    ctx.lineWidth = 4 * s;
+    ctx.beginPath();
+    ctx.moveTo(0, -10 * s);
+    ctx.lineTo(-18 * s - legBend, 22 * s);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(0, -10 * s);
+    ctx.lineTo(18 * s + legBend, 22 * s);
     ctx.stroke();
 
     ctx.restore();
   }
+}
+
+/* ===== GIFT BOXES ===== */
+let gifts = [];
+
+function initGifts() {
+  gifts = [
+    {
+      // Hot pink box with yellow ribbon
+      boxColor:    '#ff4d94',
+      boxShade:    '#cc2060',
+      ribbonColor: '#ffe44d',
+      bowColor:    '#ffd700',
+      dotColor:    'rgba(255,255,255,0.25)',
+      pattern:     'dots',
+      w: 70, h: 60, offsetX: -180, phase: 0
+    },
+    {
+      // Mint green box with white ribbon
+      boxColor:    '#4dffc3',
+      boxShade:    '#00b386',
+      ribbonColor: '#ffffff',
+      bowColor:    '#ffffff',
+      dotColor:    'rgba(0,180,120,0.3)',
+      pattern:     'stripes',
+      w: 55, h: 50, offsetX: -260, phase: 1.2
+    },
+    {
+      // Lavender box with pink ribbon
+      boxColor:    '#c97bff',
+      boxShade:    '#8a2be2',
+      ribbonColor: '#ff9ff3',
+      bowColor:    '#ff6fcf',
+      dotColor:    'rgba(255,255,255,0.2)',
+      pattern:     'dots',
+      w: 80, h: 65, offsetX: -110, phase: 2.1
+    }
+  ];
+}
+
+function drawGifts() {
+  const s = scale;
+  // Sit on the table surface — same y reference as drawTable
+  const cx    = width / 2;
+  const cyCake = (width < 768) ? height * 0.65 : height * 0.68;
+  const tableY = cyCake + layerY[0] + 80 * s;   // top of table ellipse
+
+  gifts.forEach(g => {
+    const bw = g.w * s;
+    const bh = g.h * s;
+    // Gentle bob: rises slightly when party starts
+    const bob = state.started ? Math.sin((Date.now() / 600) + g.phase) * 4 * s : 0;
+    const gx  = cx + g.offsetX * s;
+    const gy  = tableY - bh + bob;          // sit on top of table surface
+
+    ctx.save();
+    ctx.shadowColor = 'rgba(0,0,0,0.35)';
+    ctx.shadowBlur  = 10 * s;
+
+    // --- Box body ---
+    ctx.fillStyle = g.boxColor;
+    ctx.beginPath();
+    ctx.roundRect(gx - bw/2, gy, bw, bh, 6 * s);
+    ctx.fill();
+
+    // --- Side shade (gives 3-D feel) ---
+    ctx.fillStyle = g.boxShade;
+    ctx.beginPath();
+    ctx.roundRect(gx - bw/2, gy, bw * 0.18, bh, [6*s, 0, 0, 6*s]);
+    ctx.fill();
+
+    // --- Pattern on box ---
+    ctx.shadowBlur = 0;
+    ctx.save();
+    ctx.beginPath();
+    ctx.roundRect(gx - bw/2, gy, bw, bh, 6 * s);
+    ctx.clip();
+    if (g.pattern === 'dots') {
+      ctx.fillStyle = g.dotColor;
+      const dotSpacing = 14 * s;
+      for (let dx = gx - bw/2 + 10*s; dx < gx + bw/2; dx += dotSpacing) {
+        for (let dy = gy + 8*s; dy < gy + bh; dy += dotSpacing) {
+          ctx.beginPath();
+          ctx.arc(dx, dy, 3 * s, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+    } else {
+      // diagonal stripes
+      ctx.strokeStyle = g.dotColor;
+      ctx.lineWidth = 5 * s;
+      for (let i = -bh; i < bw + bh; i += 16 * s) {
+        ctx.beginPath();
+        ctx.moveTo(gx - bw/2 + i, gy);
+        ctx.lineTo(gx - bw/2 + i + bh, gy + bh);
+        ctx.stroke();
+      }
+    }
+    ctx.restore();
+
+    // --- Ribbon vertical stripe ---
+    ctx.fillStyle = g.ribbonColor;
+    ctx.globalAlpha = 0.85;
+    ctx.fillRect(gx - 5*s, gy, 10*s, bh);
+    ctx.globalAlpha = 1;
+
+    // --- Lid top strip ---
+    const lidH = bh * 0.18;
+    ctx.fillStyle = g.boxShade;
+    ctx.beginPath();
+    ctx.roundRect(gx - bw/2, gy, bw, lidH, [6*s, 6*s, 0, 0]);
+    ctx.fill();
+
+    // --- Ribbon horizontal on lid ---
+    ctx.fillStyle = g.ribbonColor;
+    ctx.globalAlpha = 0.85;
+    ctx.fillRect(gx - bw/2, gy + lidH * 0.3, bw, lidH * 0.4);
+    ctx.globalAlpha = 1;
+
+    // --- Bow (two lobes + knot) ---
+    ctx.fillStyle = g.bowColor;
+    ctx.shadowColor = 'rgba(0,0,0,0.25)';
+    ctx.shadowBlur = 4 * s;
+    // Left lobe
+    ctx.beginPath();
+    ctx.ellipse(gx - 10*s, gy - 2*s, 10*s, 7*s, -Math.PI/5, 0, Math.PI*2);
+    ctx.fill();
+    // Right lobe
+    ctx.beginPath();
+    ctx.ellipse(gx + 10*s, gy - 2*s, 10*s, 7*s, Math.PI/5, 0, Math.PI*2);
+    ctx.fill();
+    // Knot circle
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = g.ribbonColor;
+    ctx.beginPath();
+    ctx.arc(gx, gy - 1*s, 5*s, 0, Math.PI*2);
+    ctx.fill();
+
+    // --- Sparkle star on box ---
+    if (state.started) {
+      const sparkleAlpha = (Math.sin(Date.now() / 400 + g.phase) + 1) / 2;
+      ctx.globalAlpha = sparkleAlpha * 0.9;
+      ctx.fillStyle = '#fff';
+      const sx = gx + bw * 0.25;
+      const sy = gy + bh * 0.55;
+      const sr = 4 * s;
+      ctx.beginPath();
+      for (let p = 0; p < 4; p++) {
+        const angle = (p * Math.PI) / 2;
+        const ia    = angle + Math.PI / 4;
+        ctx.lineTo(sx + Math.cos(angle) * sr, sy + Math.sin(angle) * sr);
+        ctx.lineTo(sx + Math.cos(ia) * sr * 0.4, sy + Math.sin(ia) * sr * 0.4);
+      }
+      ctx.closePath();
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+
+    ctx.restore();
+  });
 }
 
 /* ===== ANIMATE LOOP ===== */
@@ -1125,6 +1346,7 @@ function animate() {
   cats.forEach(c => { c.update(); c.draw(); });
   stickmen.forEach(s => { s.update(); s.draw(); });
 
+  drawGifts();
   drawCake();
 
   [...hearts, ...confetti, ...smoke, ...balloons].forEach(p => {
