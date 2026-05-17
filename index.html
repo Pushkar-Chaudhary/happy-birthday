@@ -302,6 +302,8 @@
     <span class="close-btn" onclick="closeWishModal()">&times;</span>
     <h2>Make Your Wish</h2>
     <form id="wish-form" onsubmit="sendWish(event)">
+      <input type="text" id="wish-name" placeholder="Your Name" required style="width: 100%; padding: 12px 15px; margin-bottom: 15px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.3); background: rgba(0,0,0,0.2); color: white; font-family: 'Poppins', sans-serif; box-sizing: border-box; outline: none;">
+      <input type="email" id="wish-email" placeholder="Recipient's Gmail Address" required style="width: 100%; padding: 12px 15px; margin-bottom: 15px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.3); background: rgba(0,0,0,0.2); color: white; font-family: 'Poppins', sans-serif; box-sizing: border-box; outline: none;">
       <textarea id="wish-input" name="wish" placeholder="Type your beautiful wish here..." required></textarea>
       <button type="submit" class="submit-wish-btn">Send Wish 💌</button>
     </form>
@@ -338,8 +340,16 @@ window.onload = function() {
   overlay = document.getElementById("intro-overlay");
   
   resize();
+  partyHat.x = width < 768 ? width/2 - 120*scale : width/2 - 250*scale;
+  partyHat.y = height - 60*scale;
+  
+  cats.push(new Cat());
+  stickmen.push(new Stickman(width/2 + 200*scale));
+  stickmen.push(new Stickman(width/2 - 200*scale));
+
   window.addEventListener("resize", resize);
   initKnifeDrag();
+  initHatDrag();
 };
 
 function resize() {
@@ -384,15 +394,18 @@ function closeWishModal() {
 
 function sendWish(e) {
   e.preventDefault();
+  const wishName = document.getElementById("wish-name").value.trim();
+  const wishEmail = document.getElementById("wish-email").value.trim();
   const wishText = document.getElementById("wish-input").value;
-  const email = "pushkarchaudhary256@gmail.com";
-  const subject = encodeURIComponent("New Birthday Wish!");
+  
+  const email = wishEmail || "pushkarchaudhary256@gmail.com";
+  const subject = encodeURIComponent(`New Birthday Wish from ${wishName}`);
   const body = encodeURIComponent(wishText);
   
-  window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+  window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${email}&su=${subject}&body=${body}`, '_blank');
   
   closeWishModal();
-  hintEl.innerHTML = "Wish prepared! Check your email app to send it. ✨";
+  hintEl.innerHTML = "Wish prepared! Opening Gmail to send it. ✨";
   hintEl.style.background = "rgba(76,175,80,0.7)";
 }
 
@@ -486,6 +499,10 @@ let confetti = [];
 let smoke = [];
 let sparkles = [];
 let hearts = [];
+let balloons = [];
+let partyHat = { x: 0, y: 0, scale: 1, isDragging: false, wearer: null };
+let cats = [];
+let stickmen = [];
 
 function initCandles() {
   candles = [];
@@ -537,39 +554,70 @@ function drawFullCakeElements(cx, cy, s) {
     if (c.lit) {
       ctx.fillStyle = '#333';
       ctx.fillRect(c.x - 1*s, cY - 27*s, 2*s, 4*s);
-      ctx.fillStyle = Math.random() > 0.5 ? 'orange' : 'yellow';
+
+      const time = Date.now();
+      const flicker = Math.sin(time / 80 + c.x) * 2 * s + Math.random() * s;
+      const flameHeight = 24 * s + flicker; 
+      const flameWidth = 6 * s + Math.random() * s;
+
+      ctx.save();
+      ctx.shadowBlur = 15 * s;
+      ctx.shadowColor = '#ff6a00';
+
+      const grad = ctx.createRadialGradient(
+          c.x, cY - 27*s - flameHeight * 0.2, 0, 
+          c.x, cY - 27*s - flameHeight * 0.2, flameHeight * 0.7
+      );
+      grad.addColorStop(0, 'rgba(255, 255, 255, 1)');
+      grad.addColorStop(0.3, 'rgba(255, 255, 0, 1)');
+      grad.addColorStop(0.7, 'rgba(255, 120, 0, 1)');
+      grad.addColorStop(1, 'rgba(255, 0, 0, 0)');
+      
+      ctx.fillStyle = grad;
+
       ctx.beginPath();
       ctx.moveTo(c.x, cY - 27*s);
-      ctx.lineTo(c.x - 4*s, cY - 45*s);
-      ctx.lineTo(c.x + 4*s, cY - 45*s);
+      ctx.bezierCurveTo(
+        c.x + flameWidth, cY - 27*s, 
+        c.x + flameWidth * 0.7, cY - 27*s - flameHeight * 0.6, 
+        c.x, cY - 27*s - flameHeight
+      );
+      ctx.bezierCurveTo(
+        c.x - flameWidth * 0.7, cY - 27*s - flameHeight * 0.6, 
+        c.x - flameWidth, cY - 27*s, 
+        c.x, cY - 27*s
+      );
       ctx.fill();
+      
+      // Draw inner bright core
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+      ctx.beginPath();
+      ctx.moveTo(c.x, cY - 27*s);
+      ctx.bezierCurveTo(
+        c.x + flameWidth * 0.4, cY - 27*s, 
+        c.x + flameWidth * 0.3, cY - 27*s - flameHeight * 0.3, 
+        c.x, cY - 27*s - flameHeight * 0.5
+      );
+      ctx.bezierCurveTo(
+        c.x - flameWidth * 0.3, cY - 27*s - flameHeight * 0.3, 
+        c.x - flameWidth * 0.4, cY - 27*s, 
+        c.x, cY - 27*s
+      );
+      ctx.fill();
+      
+      ctx.restore();
     }
   });
 
-  // Hat
-  ctx.save();
-  ctx.translate(cx + 65*s, topActualY); 
-  ctx.scale(s, s);
-  ctx.fillStyle = '#4fc3f7';
-  ctx.beginPath();
-  ctx.moveTo(0, -80); 
-  ctx.lineTo(35, -30); 
-  ctx.lineTo(-35, -30); 
-  ctx.fill();
-  ctx.fillStyle = 'white';
-  ctx.beginPath(); 
-  ctx.arc(0, -30, 12, 0, Math.PI*2); 
-  ctx.fill();
-  ctx.fillStyle = 'rgba(255,255,255,0.4)';
-  ctx.beginPath(); ctx.arc(-10, -60, 4, 0, Math.PI*2); ctx.fill();
-  ctx.beginPath(); ctx.arc(15, -50, 3, 0, Math.PI*2); ctx.fill();
-  ctx.restore();
 }
 
 function drawCake() {
   const cx = width/2;
   const cy = width < 768 ? height * 0.65 : height * 0.68;
   const s = scale;
+
+  drawTable(cx, cy, s);
 
   // Step-wise drop animation
   if (!state.landed[0]) {
@@ -638,6 +686,14 @@ class Particle {
     } else if (type === 'heart') {
       this.v = Math.random()*1.5+0.5;
       this.color = 'pink';
+    } else if (type === 'balloon') {
+      this.x = Math.random() * width;
+      this.y = height + 50 + Math.random() * 100;
+      this.vx = (Math.random() - 0.5) * 0.5;
+      this.vy = -Math.random() * 1.5 - 0.5;
+      this.size = (Math.random() * 15 + 20) * scale;
+      this.color = `hsl(${Math.random()*360}, 80%, 60%)`;
+      this.stringLen = (Math.random() * 20 + 30) * scale;
     }
   }
   update() {
@@ -654,6 +710,13 @@ class Particle {
       this.y += this.vy;
       this.vy += 0.2; // gravity
       if(this.y > height) this.life = 0;
+    } else if (this.type === 'balloon') {
+      this.y += this.vy;
+      // wobble
+      this.vx += (Math.random() - 0.5) * 0.05;
+      if (this.vx > 1) this.vx = 1;
+      if (this.vx < -1) this.vx = -1;
+      if (this.y < -this.size - this.stringLen) this.life = 0;
     }
   }
   draw() {
@@ -668,6 +731,35 @@ class Particle {
     } else if (this.type === 'smoke') {
       ctx.fillStyle = `rgba(220, 220, 220, ${Math.max(0, this.life / 100)})`;
       ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
+    } else if (this.type === 'balloon') {
+      // String
+      ctx.beginPath();
+      ctx.moveTo(this.x, this.y + this.size);
+      ctx.lineTo(this.x + this.vx*5, this.y + this.size + this.stringLen);
+      ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+      
+      // Balloon body
+      ctx.fillStyle = this.color;
+      ctx.beginPath();
+      ctx.ellipse(this.x, this.y, this.size * 0.85, this.size, 0, 0, Math.PI*2);
+      ctx.fill();
+      
+      // Balloon highlight
+      ctx.fillStyle = 'rgba(255,255,255,0.3)';
+      ctx.beginPath();
+      ctx.ellipse(this.x - this.size*0.3, this.y - this.size*0.4, this.size*0.15, this.size*0.3, Math.PI/8, 0, Math.PI*2);
+      ctx.fill();
+      
+      // Little knot
+      ctx.fillStyle = this.color;
+      ctx.beginPath();
+      ctx.moveTo(this.x, this.y + this.size);
+      ctx.lineTo(this.x - 3, this.y + this.size + 4);
+      ctx.lineTo(this.x + 3, this.y + this.size + 4);
+      ctx.fill();
+      return;
     }
     ctx.fill();
   }
@@ -800,23 +892,253 @@ function initKnifeDrag() {
   }
 }
 
+function initHatDrag() {
+  canvas.addEventListener('mousedown', startHatDrag);
+  canvas.addEventListener('touchstart', startHatDrag, {passive: false});
+
+  function startHatDrag(e) {
+    if (!state.started) return;
+    let clientX = e.clientX || (e.touches && e.touches[0].clientX);
+    let clientY = e.clientY || (e.touches && e.touches[0].clientY);
+    
+    let hx = partyHat.x;
+    let hy = partyHat.y;
+    if (partyHat.wearer) {
+        if (partyHat.wearer instanceof Cat) { hx = partyHat.wearer.x + 30*scale; hy = partyHat.wearer.y - 65*scale; }
+        else if (partyHat.wearer instanceof Stickman) { hx = partyHat.wearer.x; hy = partyHat.wearer.y - partyHat.wearer.jumpY - 95*scale; }
+    }
+
+    if (clientX > hx - 40*scale && clientX < hx + 40*scale && clientY > hy - 90*scale && clientY < hy + 20*scale) {
+      partyHat.isDragging = true;
+      partyHat.wearer = null; 
+      partyHat.x = clientX;
+      partyHat.y = clientY + 40*scale; 
+      
+      document.addEventListener('mousemove', dragHat);
+      document.addEventListener('touchmove', dragHat, {passive: false});
+      document.addEventListener('mouseup', endHatDrag);
+      document.addEventListener('touchend', endHatDrag);
+      e.preventDefault();
+    }
+  }
+
+  function dragHat(e) {
+    if (!partyHat.isDragging) return;
+    e.preventDefault();
+    let clientX = e.clientX || (e.touches && e.touches[0].clientX);
+    let clientY = e.clientY || (e.touches && e.touches[0].clientY);
+    partyHat.x = clientX;
+    partyHat.y = clientY + 40*scale;
+  }
+
+  function endHatDrag(e) {
+    partyHat.isDragging = false;
+    document.removeEventListener('mousemove', dragHat);
+    document.removeEventListener('touchmove', dragHat);
+    document.removeEventListener('mouseup', endHatDrag);
+    document.removeEventListener('touchend', endHatDrag);
+
+    let closestDist = 120 * scale;
+    let closestChar = null;
+    
+    cats.forEach(c => {
+       let hx = c.x + 30*scale;
+       let hy = c.y - 45*scale;
+       let dist = Math.hypot(partyHat.x - hx, (partyHat.y - 40*scale) - hy);
+       if(dist < closestDist) { closestDist = dist; closestChar = c; }
+    });
+    stickmen.forEach(s => {
+       let hx = s.x;
+       let hy = s.y - s.jumpY - 75*scale;
+       let dist = Math.hypot(partyHat.x - hx, (partyHat.y - 40*scale) - hy);
+       if(dist < closestDist) { closestDist = dist; closestChar = s; }
+    });
+
+    if (closestChar) {
+       partyHat.wearer = closestChar;
+    }
+  }
+}
+
+function drawTable(cx, cy, s) {
+  const tableY = cy + layerY[0] + 80*s; 
+  ctx.fillStyle = '#8b4513';
+  ctx.beginPath();
+  ctx.ellipse(cx, tableY, 280*s, 60*s, 0, 0, Math.PI*2);
+  ctx.fill();
+  ctx.fillStyle = '#5c4033';
+  ctx.fillRect(cx - 280*s, tableY, 560*s, 20*s);
+  ctx.fillRect(cx - 220*s, tableY + 10*s, 30*s, height);
+  ctx.fillRect(cx + 190*s, tableY + 10*s, 30*s, height);
+}
+
+function drawHat() {
+  const s = scale;
+  let hx = partyHat.x;
+  let hy = partyHat.y;
+  
+  if (partyHat.wearer) {
+    if (partyHat.wearer instanceof Cat) {
+      hx = partyHat.wearer.x + 30*s;
+      hy = partyHat.wearer.y - 40*s; 
+    } else if (partyHat.wearer instanceof Stickman) {
+      hx = partyHat.wearer.x;
+      hy = partyHat.wearer.y - partyHat.wearer.jumpY - 70*s;
+    }
+  }
+
+  ctx.save();
+  ctx.translate(hx, hy); 
+  ctx.scale(s, s);
+  if (partyHat.isDragging) ctx.scale(1.2, 1.2);
+  
+  ctx.fillStyle = '#4fc3f7';
+  ctx.beginPath();
+  ctx.moveTo(0, -80); 
+  ctx.lineTo(35, -30); 
+  ctx.lineTo(-35, -30); 
+  ctx.fill();
+  ctx.fillStyle = 'white';
+  ctx.beginPath(); 
+  ctx.arc(0, -30, 12, 0, Math.PI*2); 
+  ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,0.4)';
+  ctx.beginPath(); ctx.arc(-10, -60, 4, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(15, -50, 3, 0, Math.PI*2); ctx.fill();
+  ctx.restore();
+}
+
+class Cat {
+  constructor() {
+    this.x = -100;
+    this.y = height - 50; 
+    this.vx = 0.5;
+  }
+  update() {
+    this.x += this.vx;
+    if (this.x > width + 100) this.x = -100;
+    this.y = height - 50*scale; 
+  }
+  draw() {
+    const s = scale;
+    ctx.save();
+    ctx.translate(this.x, this.y);
+    
+    ctx.fillStyle = '#ffb6c1';
+    ctx.beginPath();
+    ctx.ellipse(0, -20*s, 30*s, 20*s, 0, 0, Math.PI*2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(30*s, -35*s, 15*s, 0, Math.PI*2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(25*s, -48*s); ctx.lineTo(20*s, -60*s); ctx.lineTo(32*s, -48*s);
+    ctx.moveTo(35*s, -45*s); ctx.lineTo(45*s, -55*s); ctx.lineTo(42*s, -42*s);
+    ctx.fill();
+    ctx.strokeStyle = '#ffb6c1';
+    ctx.lineWidth = 4*s;
+    ctx.beginPath();
+    const tailWag = Math.sin(Date.now()/200)*10*s;
+    ctx.moveTo(-25*s, -25*s);
+    ctx.quadraticCurveTo(-40*s, -40*s + tailWag, -45*s, -50*s + tailWag);
+    ctx.stroke();
+
+    ctx.fillStyle = '#333';
+    ctx.beginPath(); ctx.arc(35*s, -38*s, 2*s, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(42*s, -38*s, 2*s, 0, Math.PI*2); ctx.fill();
+    ctx.strokeStyle = '#ffb6c1';
+    ctx.lineWidth = 5*s;
+    const walk1 = Math.sin(Date.now()/150)*10*s;
+    const walk2 = Math.sin(Date.now()/150 + Math.PI)*10*s;
+    ctx.beginPath(); ctx.moveTo(-15*s, -5*s); ctx.lineTo(-15*s + walk1, 10*s); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(5*s, -5*s); ctx.lineTo(5*s + walk2, 10*s); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(15*s, -15*s); ctx.lineTo(15*s + walk1, 5*s); ctx.stroke();
+    ctx.restore();
+  }
+}
+
+class Stickman {
+  constructor(x) {
+    this.x = x;
+    this.y = height - 50; 
+    this.jumpY = 0;
+    this.danceOffset = Math.random() * 1000;
+  }
+  update() {
+    this.y = height - 50*scale;
+    if (state.started) {
+       this.jumpY = Math.abs(Math.sin((Date.now() + this.danceOffset)/300)) * 40 * scale;
+    }
+  }
+  draw() {
+    const s = scale;
+    ctx.save();
+    ctx.translate(this.x, this.y - this.jumpY);
+    
+    ctx.fillStyle = '#fff';
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 4*s;
+    ctx.beginPath();
+    ctx.arc(0, -60*s, 15*s, 0, Math.PI*2);
+    ctx.stroke();
+    
+    ctx.beginPath();
+    ctx.moveTo(0, -45*s);
+    ctx.lineTo(0, -10*s);
+    ctx.stroke();
+
+    const armWave = state.started ? Math.sin((Date.now() + this.danceOffset)/150)*20*s : 0;
+    ctx.beginPath();
+    ctx.moveTo(0, -35*s);
+    ctx.lineTo(-20*s, -50*s + armWave);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(0, -35*s);
+    ctx.lineTo(20*s, -50*s - armWave);
+    ctx.stroke();
+
+    const legBend = state.started ? Math.sin((Date.now() + this.danceOffset)/300)*10*s : 0;
+    ctx.beginPath();
+    ctx.moveTo(0, -10*s);
+    ctx.lineTo(-15*s - legBend, 20*s);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(0, -10*s);
+    ctx.lineTo(15*s + legBend, 20*s);
+    ctx.stroke();
+
+    ctx.restore();
+  }
+}
+
 /* ===== ANIMATE LOOP ===== */
 setInterval(() => {
-  if(state.started) hearts.push(new Particle('heart'));
+  if(state.started) {
+    hearts.push(new Particle('heart'));
+    if (Math.random() > 0.6) balloons.push(new Particle('balloon'));
+  }
 }, 300);
 
 function animate() {
   ctx.clearRect(0,0,width,height);
   
+  cats.forEach(c => { c.update(); c.draw(); });
+  stickmen.forEach(s => { s.update(); s.draw(); });
+
   drawCake();
 
-  [...hearts, ...confetti, ...smoke].forEach(p => {
+  [...hearts, ...confetti, ...smoke, ...balloons].forEach(p => {
     p.update(); p.draw();
   });
+  
+  if (state.started) {
+     drawHat();
+  }
   
   hearts = hearts.filter(h => h.y > -50);
   smoke = smoke.filter(s => s.life > 0);
   confetti = confetti.filter(c => c.life > 0);
+  balloons = balloons.filter(b => b.life > 0);
   
   if(state.started) requestAnimationFrame(animate);
 }
