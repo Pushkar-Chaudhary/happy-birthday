@@ -14,7 +14,6 @@
     --glass-border: rgba(255, 255, 255, 0.12);
     --gold: #d4af37;
     --gold-glow: 0 0 15px rgba(212, 175, 55, 0.5);
-    --esewa-green: #60bb46;
     --text-light: #f5f6fa;
     --text-dark: #2f2e41;
     --primary-gradient: linear-gradient(135deg, #1b072d 0%, #0d0218 100%);
@@ -140,14 +139,6 @@
   .btn-secondary:hover {
     background: rgba(255,255,255,0.15);
     box-shadow: 0 8px 20px rgba(255,255,255,0.1);
-  }
-
-  .btn-esewa {
-    background: var(--esewa-green);
-    box-shadow: 0 8px 25px rgba(96, 187, 70, 0.3);
-  }
-  .btn-esewa:hover {
-    box-shadow: 0 12px 30px rgba(96, 187, 70, 0.5);
   }
 
   /* ===== HUB SCREEN (PORTAL) ===== */
@@ -692,180 +683,6 @@
   }
   .copy-btn:hover { background: #fff; }
 
-  /* ===== ESEWA PAYMENT MODAL ===== */
-  .esewa-modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.8);
-    backdrop-filter: blur(8px);
-    z-index: 10000;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 15px;
-    opacity: 0;
-    transition: opacity 0.3s;
-  }
-
-  .esewa-modal-overlay.active {
-    display: flex;
-    opacity: 1;
-  }
-
-  .esewa-modal {
-    background: #ffffff;
-    color: var(--text-dark);
-    border-radius: 20px;
-    max-width: 450px;
-    width: 100%;
-    box-shadow: 0 25px 60px rgba(0,0,0,0.6);
-    border: 4px solid var(--esewa-green);
-    overflow: hidden;
-    position: relative;
-    animation: esewaPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-  }
-
-  @keyframes esewaPop {
-    from { transform: scale(0.85) translateY(20px); }
-    to { transform: scale(1) translateY(0); }
-  }
-
-  .esewa-header {
-    background: var(--esewa-green);
-    color: white;
-    padding: 20px;
-    text-align: center;
-    font-family: var(--font-body);
-  }
-
-  .esewa-header h3 {
-    font-size: 1.4rem;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-  }
-
-  .esewa-body {
-    padding: 25px;
-    text-align: center;
-    font-family: var(--font-body);
-  }
-
-  .esewa-instructions {
-    text-align: left;
-    background: #f1f8e9;
-    border-left: 4px solid var(--esewa-green);
-    padding: 12px 15px;
-    border-radius: 0 10px 10px 0;
-    margin-bottom: 20px;
-    font-size: 0.85rem;
-    line-height: 1.5;
-  }
-
-  .esewa-instructions ol {
-    margin-left: 15px;
-    margin-top: 5px;
-  }
-
-  .esewa-qr-box {
-    margin: 15px auto;
-    width: 170px;
-    height: 170px;
-    border: 1px solid #ddd;
-    border-radius: 12px;
-    padding: 10px;
-    background: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-  }
-
-  .esewa-qr-box img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-  }
-
-  .esewa-id-tag {
-    font-size: 0.9rem;
-    font-weight: 700;
-    color: var(--esewa-green);
-    background: #e8f5e9;
-    padding: 6px 12px;
-    border-radius: 30px;
-    display: inline-block;
-    margin-bottom: 20px;
-  }
-
-  .esewa-input {
-    width: 100%;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 10px 14px;
-    margin-bottom: 12px;
-    font-family: var(--font-body);
-    font-size: 0.95rem;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-
-  .esewa-input:focus {
-    border-color: var(--esewa-green);
-  }
-
-  .esewa-close-btn {
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    font-size: 1.5rem;
-    color: white;
-    cursor: pointer;
-    background: rgba(0,0,0,0.15);
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.2s;
-  }
-  .esewa-close-btn:hover { background: rgba(0,0,0,0.3); }
-
-  /* Verification success overlay */
-  .esewa-success-screen {
-    display: none;
-    position: absolute;
-    inset: 0;
-    background: white;
-    z-index: 100;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 30px;
-  }
-
-  .success-checkmark {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    background: var(--esewa-green);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-size: 3rem;
-    margin-bottom: 15px;
-    box-shadow: 0 0 20px rgba(96, 187, 70, 0.4);
-    animation: successScale 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-  }
-
-  @keyframes successScale {
-    from { transform: scale(0); }
-    to { transform: scale(1); }
-  }
 
   /* ===== RECIPIENT SURPRISE REVEAL SYSTEM ===== */
   .surprise-portal {
@@ -1409,10 +1226,7 @@
       </div>
     </div>
 
-    <!-- Monetization Upgrade notification -->
-    <div style="background: rgba(212,175,55,0.08); border: 1px solid rgba(212,175,55,0.2); padding: 12px; border-radius: 12px; font-size: 0.85rem; color: #ecdba5; display: flex; align-items: center; justify-content: center; gap: 8px;">
-      ✨ Customized gifts & little extra touches are ready whenever you want them
-    </div>
+
   </div>
   
   <div class="footer-credits">
@@ -1609,9 +1423,9 @@
                 <div class="picker-label">Paper</div>
                 <div class="picker-options">
                   <div class="picker-option selected" onclick="selectWrap('kraft')">Kraft Brown</div>
-                  <div class="picker-option" id="opt-wrap-emerald" onclick="selectWrap('emerald')">Emerald <span class="premium-lock-icon">🔒</span></div>
-                  <div class="picker-option" id="opt-wrap-velvet" onclick="selectWrap('velvet')">Velvet <span class="premium-lock-icon">🔒</span></div>
-                  <div class="picker-option" id="opt-wrap-rosegold" onclick="selectWrap('rosegold')">Rose Gold <span class="premium-lock-icon">🔒</span></div>
+                  <div class="picker-option" id="opt-wrap-emerald" onclick="selectWrap('emerald')">Emerald</div>
+                  <div class="picker-option" id="opt-wrap-velvet" onclick="selectWrap('velvet')">Velvet</div>
+                  <div class="picker-option" id="opt-wrap-rosegold" onclick="selectWrap('rosegold')">Rose Gold</div>
                 </div>
               </div>
               
@@ -1620,9 +1434,9 @@
                 <div class="picker-label">Ribbon</div>
                 <div class="picker-options">
                   <div class="picker-option selected" onclick="selectRibbon('pink')">Silk Pink</div>
-                  <div class="picker-option" id="opt-ribbon-gold" onclick="selectRibbon('gold')">Royal Gold <span class="premium-lock-icon">🔒</span></div>
-                  <div class="picker-option" id="opt-ribbon-crimson" onclick="selectRibbon('crimson')">Crimson Red <span class="premium-lock-icon">🔒</span></div>
-                  <div class="picker-option" id="opt-ribbon-navy" onclick="selectRibbon('navy')">Deep Blue <span class="premium-lock-icon">🔒</span></div>
+                  <div class="picker-option" id="opt-ribbon-gold" onclick="selectRibbon('gold')">Royal Gold</div>
+                  <div class="picker-option" id="opt-ribbon-crimson" onclick="selectRibbon('crimson')">Crimson Red</div>
+                  <div class="picker-option" id="opt-ribbon-navy" onclick="selectRibbon('navy')">Deep Blue</div>
                 </div>
               </div>
             </div>
@@ -1632,10 +1446,7 @@
 
         <div style="display: flex; gap: 15px; width: 100%; margin-top: 25px; align-items: center;">
           <button class="btn btn-secondary" onclick="prevStep(2)">⬅️ Back</button>
-          <div style="flex-grow: 1; text-align: center;">
-            <button class="btn btn-esewa" id="btn-unlock-premium" onclick="openEsewaModal()" style="padding: 10px 20px; font-size: 0.85rem;">✨ Customized Gifts</button>
-          </div>
-          <button class="btn btn-gold" onclick="goToStep(4)">Write Wish Letter ✍️</button>
+          <button class="btn btn-gold" onclick="goToStep(4)" style="flex: 1;">Write Wish Letter ✍️</button>
         </div>
       </div>
     </div>
@@ -1688,67 +1499,6 @@
       <a href="#" onclick="goHome(event)" style="color: #666; font-size: 0.9rem; text-decoration: none;">🏠 Return to Main Dashboard</a>
     </div>
 
-  </div>
-</div>
-
-<!-- ==================== ESEWA MONETIZATION MODAL ==================== -->
-<div class="esewa-modal-overlay" id="modal-esewa">
-  <div class="esewa-modal">
-    <div class="esewa-header">
-      <span class="esewa-close-btn" onclick="closeEsewaModal()">&times;</span>
-      <h3>✨ Customized Gifts</h3>
-    </div>
-    <div class="esewa-body">
-      <p style="color: #555; margin-bottom: 15px; font-size: 0.95rem;">If you are paying from your personal eSewa account, this opens the eSewa app or website directly so the customer can pay you in one tap.</p>
-      
-      <div class="esewa-instructions">
-        <strong>Simple Steps to Pay:</strong>
-        <ol>
-          <li>Click the button to open the eSewa payment page for your personal account.</li>
-          <li>Set your personal eSewa ID in the server environment before deploying.</li>
-          <li>This is the correct personal-account path; merchant-only checkout is a different setup.</li>
-        </ol>
-      </div>
-
-      <div class="esewa-id-tag">Pay to your personal eSewa account</div>
-
-      <!-- Stylized Dynamic eSewa QR Code Image Box -->
-      <div class="esewa-qr-box">
-        <!-- Renders esewa-qr.png if it exists inside workspace, else falls back dynamically to the beautifully styled SVG markup -->
-        <img id="esewa-qr-img" src="esewa-qr.png" alt="eSewa QR Code" style="width: 100%; height: 100%; object-fit: contain; display: none;" onerror="this.style.display='none'; document.getElementById('esewa-qr-svg-placeholder').style.display='block';">
-        <div id="esewa-qr-svg-placeholder" style="width: 100%; height: 100%;">
-          <svg viewBox="0 0 100 100" style="width: 100%; height: 100%;">
-            <rect x="2" y="2" width="96" height="96" fill="none" stroke="#60bb46" stroke-width="2.5" stroke-dasharray="4,4" rx="8" />
-            <rect x="10" y="10" width="20" height="20" fill="#e8f5e9" stroke="#60bb46" stroke-width="1.5" rx="4" />
-            <rect x="70" y="10" width="20" height="20" fill="#e8f5e9" stroke="#60bb46" stroke-width="1.5" rx="4" />
-            <rect x="10" y="70" width="20" height="20" fill="#e8f5e9" stroke="#60bb46" stroke-width="1.5" rx="4" />
-            
-            <circle cx="20" cy="20" r="4" fill="#60bb46" />
-            <circle cx="80" cy="20" r="4" fill="#60bb46" />
-            <circle cx="20" cy="80" r="4" fill="#60bb46" />
-            
-            <!-- Graphic help message -->
-            <text x="50" y="44" fill="#60bb46" font-size="6.5" font-weight="700" font-family="sans-serif" text-anchor="middle">Add your QR</text>
-            <text x="50" y="52" fill="#888" font-size="4.8" font-family="sans-serif" text-anchor="middle">Save image as</text>
-            <text x="50" y="60" fill="#222" font-size="5.5" font-weight="700" font-family="sans-serif" text-anchor="middle">esewa-qr.png</text>
-          </svg>
-        </div>
-      </div>
-
-      <div class="form-group" style="margin-bottom: 12px;">
-        <p style="color: #555; font-size: 0.9rem; line-height: 1.5; margin: 0 0 10px 0; text-align: left;">This opens the official eSewa checkout page. Your store credentials are kept on the server, not exposed in the browser.</p>
-      </div>
-
-      <button class="btn btn-esewa" onclick="openPersonalEsewaPayPage()" style="width: 100%;">Open eSewa to Pay You</button>
-    </div>
-
-    <!-- Verification progress screen overlay -->
-    <div class="esewa-success-screen" id="esewa-success-panel">
-      <div class="success-checkmark">✓</div>
-      <h3 style="color: #60bb46; font-size: 1.4rem; font-weight: bold; margin-bottom: 8px;">Upgrade Successful!</h3>
-      <p style="color: #666; font-size: 0.9rem; line-height: 1.5; margin-bottom: 20px;">Your customized gift choices are saved. You can now continue with the personal touch you selected. 🎉</p>
-      <button class="btn btn-gold" onclick="finishEsewaUnlock()" style="width: 100%;">Amazing, Thank You!</button>
-    </div>
   </div>
 </div>
 
@@ -1826,7 +1576,7 @@
       <h2>Make Your Wish</h2>
       <form id="wish-form" onsubmit="sendWish(event)">
         <input type="text" id="wish-name" placeholder="Your Name" required style="width: 100%; padding: 12px 15px; margin-bottom: 15px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.3); background: rgba(0,0,0,0.2); color: white; font-family: var(--font-body); box-sizing: border-box; outline: none;">
-        <input type="email" id="wish-email" placeholder="Recipient's Gmail Address" value="your-esewa-id@gmail.com" required style="width: 100%; padding: 12px 15px; margin-bottom: 15px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.3); background: rgba(0,0,0,0.2); color: white; font-family: var(--font-body); box-sizing: border-box; outline: none;">
+        <input type="email" id="wish-email" placeholder="Recipient's Gmail Address" value="your-email@gmail.com" required style="width: 100%; padding: 12px 15px; margin-bottom: 15px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.3); background: rgba(0,0,0,0.2); color: white; font-family: var(--font-body); box-sizing: border-box; outline: none;">
         <textarea id="wish-input" name="wish" placeholder="Type your beautiful wish here..." required style="width: 100%; height: 120px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.3); border-radius: 10px; padding: 15px; color: white; font-family: var(--font-body); font-size: 1rem; resize: none; margin-bottom: 20px; outline: none;"></textarea>
         <button type="submit" class="submit-wish-btn">Send Wish 💌</button>
       </form>
@@ -1843,19 +1593,33 @@
 let canvas, ctx, width, height, scale;
 let audio, textEl, hintEl, overlay;
 let activeScreen = 'screen-hub';
+const DEFAULT_CONTACT_EMAIL = 'your-email@gmail.com';
 
-/* =========================================================================
-   DEVELOPER ESEWA PAYMENT RECEIVING CONFIGURATION
-   ========================================================================= */
-const ESEWA_RECEIVER_CONFIG = {
-  // 1. Enter your eSewa registered Mobile number or Email address below:
-  esewaId: 'your-esewa-id@gmail.com', 
-  
-  // 2. OPTIONAL: Web3Forms Free Access Key to get instant email notifications
-  // when someone submits their payment reference code!
-  // Sign up for free in 5 seconds at https://web3forms.com to receive the key.
-  web3FormsAccessKey: '' 
-};
+function startPartyAudio() {
+  audio = document.getElementById('music');
+  if (!audio) return;
+
+  if (!audio.src || !audio.src.includes('aud.mp3')) {
+    audio.src = 'aud.mp3';
+  }
+
+  audio.loop = true;
+  audio.preload = 'auto';
+  audio.volume = 0.25;
+
+  audio.load();
+  audio.play().then(() => {
+    let vol = 0.25;
+    const fade = setInterval(() => {
+      vol = Math.min(vol + 0.05, 0.85);
+      audio.volume = vol;
+      if (vol >= 0.85) clearInterval(fade);
+    }, 80);
+  }).catch((err) => {
+    console.log('Party audio will start once the page interaction is accepted.', err);
+  });
+}
+
 
 // Interactive Canvas Celebration Physics State
 let state = {
@@ -2026,16 +1790,16 @@ const FLOWER_OFFSETS = [
 
 const WRAPPING_PAPERS = {
   kraft: { name: 'Kraft Brown', colorBg: '#c8ad7f', colorFg: '#e2cc9e' },
-  emerald: { name: 'Emerald Silk', colorBg: '#094226', colorFg: '#0f6139', isPremium: true },
-  velvet: { name: 'Velvet Indigo', colorBg: '#12112d', colorFg: '#1d1b4c', isPremium: true },
-  rosegold: { name: 'Rose Gold', colorBg: '#dfaaa0', colorFg: '#ebc0b7', isPremium: true }
+  emerald: { name: 'Emerald Silk', colorBg: '#094226', colorFg: '#0f6139' },
+  velvet: { name: 'Velvet Indigo', colorBg: '#12112d', colorFg: '#1d1b4c' },
+  rosegold: { name: 'Rose Gold', colorBg: '#dfaaa0', colorFg: '#ebc0b7' }
 };
 
 const RIBBONS = {
   pink: { name: 'Silk Pink', color: '#ff8fa3' },
-  gold: { name: 'Royal Gold', color: '#d4af37', isPremium: true },
-  crimson: { name: 'Crimson Red', color: '#bd081c', isPremium: true },
-  navy: { name: 'Deep Blue', color: '#0d47a1', isPremium: true }
+  gold: { name: 'Royal Gold', color: '#d4af37' },
+  crimson: { name: 'Crimson Red', color: '#bd081c' },
+  navy: { name: 'Deep Blue', color: '#0d47a1' }
 };
 
 /* ===== STARFIELD CANVAS BACKGROUND ===== */
@@ -2088,10 +1852,6 @@ function init() {
   loadSavedPremiumStatus();
   loadSavedProfile();
   
-  // Apply eSewa ID configuration text
-  const label = document.getElementById('esewa-target-id-placeholder');
-  if (label) label.innerText = ESEWA_RECEIVER_CONFIG.esewaId;
-  
   // Inject Static vector icons into inventory lists
   Object.keys(FLOWER_ASSETS).forEach(key => {
     const div = document.getElementById(`inv-${key}`);
@@ -2108,22 +1868,13 @@ function init() {
     launchRecipientSurprise(surpriseParam);
   }
   
-  // Double-check image vs SVG display status of eSewa QR
-  const qrImg = document.getElementById('esewa-qr-img');
-  if (qrImg) {
-    qrImg.onload = function() {
-      this.style.display = 'block';
-      document.getElementById('esewa-qr-svg-placeholder').style.display = 'none';
-    };
-  }
 }
 
 document.addEventListener("DOMContentLoaded", init);
 
 /* ===== USER SYSTEM & AUTH STATE ===== */
 function loadSavedPremiumStatus() {
-  const premium = localStorage.getItem('esewa_premium_unlocked') === 'true';
-  surprise.isPremium = premium;
+  surprise.isPremium = true;
   updatePremiumUIState();
 }
 
@@ -2143,17 +1894,7 @@ function loadSavedProfile() {
 }
 
 function updatePremiumUIState() {
-  if (surprise.isPremium) {
-    // Remove lock notifications & indicators
-    document.querySelectorAll('.premium-lock-icon').forEach(el => el.style.display = 'none');
-    const payBtn = document.getElementById('btn-unlock-premium');
-    if (payBtn) {
-      payBtn.innerHTML = '✨ Customized Gifts Ready';
-      payBtn.className = 'btn btn-secondary';
-      payBtn.disabled = true;
-      payBtn.onclick = null;
-    }
-  }
+  document.querySelectorAll('.premium-lock-icon').forEach(el => el.style.display = 'none');
 }
 
 function selectAvatar(el, avatarIcon) {
@@ -2271,11 +2012,6 @@ function adjustFlower(flowerType, change) {
 }
 
 function selectWrap(wrapKey) {
-  if (WRAPPING_PAPERS[wrapKey].isPremium && !surprise.isPremium) {
-    openEsewaModal();
-    return;
-  }
-  
   surprise.wrap = wrapKey;
   
   const wrapOptions = document.querySelectorAll('#step-card-3 .picker-row:nth-child(1) .picker-option');
@@ -2287,11 +2023,6 @@ function selectWrap(wrapKey) {
 }
 
 function selectRibbon(ribbonKey) {
-  if (RIBBONS[ribbonKey].isPremium && !surprise.isPremium) {
-    openEsewaModal();
-    return;
-  }
-  
   surprise.ribbon = ribbonKey;
   
   const ribbonOptions = document.querySelectorAll('#step-card-3 .picker-row:nth-child(2) .picker-option');
@@ -2458,7 +2189,7 @@ function copyShareUrl() {
 
 function sendSurpriseGmail() {
   const url = document.getElementById('share-url-output').value;
-  const email = surprise.recipientEmail || ESEWA_RECEIVER_CONFIG.esewaId;
+  const email = surprise.recipientEmail || DEFAULT_CONTACT_EMAIL;
   const subject = encodeURIComponent(`A Magical Birthday Surprise from ${surprise.senderName} 💐🎂`);
   
   const emailBody = `Hey ${surprise.recipientName},\n\n` +
@@ -2508,58 +2239,6 @@ function resetWorkspace() {
     syncLetterText();
     goToStep(1);
   }
-}
-
-/* ===== ESEWA PAYMENT SYSTEM & ROUTER ===== */
-function openEsewaModal() {
-  const modal = document.getElementById('modal-esewa');
-  modal.classList.add('active');
-  
-  // Set eSewa input presets
-  document.getElementById('esewa-sender-id').value = surprise.senderEmail || '';
-}
-
-function closeEsewaModal() {
-  document.getElementById('modal-esewa').classList.remove('active');
-}
-
-function openPersonalEsewaPayPage() {
-  const submitBtn = document.querySelector('.esewa-body .btn-esewa');
-  if (!submitBtn) return;
-
-  submitBtn.innerText = 'Opening eSewa...';
-  submitBtn.disabled = true;
-
-  fetch('/api/esewa/personal-info')
-    .then((response) => response.json())
-    .then((data) => {
-      if (!data.ok) {
-        throw new Error('Unable to load eSewa pay page.');
-      }
-
-      const successUrl = `${window.location.origin}/payment-success.html`;
-      const failureUrl = `${window.location.origin}/payment-failure.html`;
-      const deepLink = `esewa://pay?amount=299&pid=gift-card&su=${encodeURIComponent(successUrl)}&fu=${encodeURIComponent(failureUrl)}`;
-
-      window.location.href = deepLink;
-      setTimeout(() => {
-        window.open(data.payUrl, '_blank', 'noopener,noreferrer');
-      }, 700);
-
-      submitBtn.innerText = 'Open eSewa to Pay You';
-      submitBtn.disabled = false;
-    })
-    .catch((error) => {
-      console.error(error);
-      alert('Unable to open the personal eSewa payment page right now.');
-      submitBtn.innerText = 'Open eSewa to Pay You';
-      submitBtn.disabled = false;
-    });
-}
-
-function finishEsewaUnlock() {
-  document.getElementById('esewa-success-panel').style.display = 'none';
-  closeEsewaModal();
 }
 
 /* ===== RECIPIENT SURPRISE REVEAL FLOW ===== */
@@ -2625,17 +2304,7 @@ function unwrapGiftBouquet() {
   
   box.classList.add('open');
   
-  audio = document.getElementById("music");
-  if (!audio) return;
-  audio.volume = 0.3;
-  audio.play().then(() => {
-    let v = 0.3;
-    const fade = setInterval(() => {
-      v += 0.05;
-      audio.volume = Math.min(v, 1);
-      if (v >= 1) clearInterval(fade);
-    }, 80);
-  }).catch(err => console.log("Autoplay blocked initial audio."));
+  startPartyAudio();
 }
 
 function goToBirthdayGame() {
@@ -2656,6 +2325,7 @@ function goToBirthdayGame() {
   ctx = canvas.getContext("2d");
   textEl = document.getElementById("text");
   hintEl = document.getElementById("hint");
+  startPartyAudio();
   
   resize();
   
@@ -2694,7 +2364,7 @@ function startOfflineSandbox() {
   ctx = canvas.getContext("2d");
   textEl = document.getElementById("text");
   hintEl = document.getElementById("hint");
-  audio = document.getElementById("music");
+  startPartyAudio();
   
   resize();
   
@@ -2705,17 +2375,6 @@ function startOfflineSandbox() {
     'Sending you a soft and joyful birthday wish from the heart 💐',
     'May every moment feel calm, warm, and full of grace ✨'
   ];
-  
-  if (!audio) return;
-  audio.volume = 0.3;
-  audio.play().then(() => {
-    let v = 0.3;
-    const fade = setInterval(() => {
-      v += 0.05;
-      audio.volume = Math.min(v, 1);
-      if (v >= 1) clearInterval(fade);
-    }, 80);
-  }).catch(e => console.log("Audio play failed", e));
   
   state.started = true;
   startTypewriter();
@@ -3617,7 +3276,7 @@ function openWishModal() {
   setTimeout(() => modal.style.opacity = '1', 10);
 
   const senderName = localStorage.getItem('surprise_sender_name') || (surpriseData ? surpriseData.sName : '');
-  const senderEmail = localStorage.getItem('surprise_sender_email') || (surpriseData ? surpriseData.rEmail : ESEWA_RECEIVER_CONFIG.esewaId);
+  const senderEmail = localStorage.getItem('surprise_sender_email') || (surpriseData ? surpriseData.rEmail : DEFAULT_CONTACT_EMAIL);
 
   document.getElementById('wish-name').value = senderName;
   document.getElementById('wish-email').value = senderEmail;
@@ -3635,7 +3294,7 @@ function sendWish(e) {
   const wishEmail = document.getElementById("wish-email").value.trim();
   const wishText = document.getElementById("wish-input").value.trim();
   
-  const email = wishEmail || localStorage.getItem('surprise_sender_email') || ESEWA_RECEIVER_CONFIG.esewaId;
+  const email = wishEmail || localStorage.getItem('surprise_sender_email') || DEFAULT_CONTACT_EMAIL;
   const subject = encodeURIComponent(`Warm Birthday Wish from ${wishName}`);
   const body = encodeURIComponent(`Hello there,\n\n${wishText}\n\nWarm wishes and blessings,\n${wishName}`);
   const isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
