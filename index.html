@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>A little birthday letter 💐</title>
+<title>A virtual wish on their special day ✨</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Outfit:wght@300;400;500;600;700&family=Sacramento&display=swap" rel="stylesheet">
 <style>
   /* ===== CSS VARIABLES & RESET ===== */
@@ -1376,22 +1376,22 @@
 <div id="screen-hub" class="screen active">
   <div class="glass-card">
     <div class="hub-logo">💐🎂</div>
-    <h1 class="hub-title">A little birthday letter</h1>
-    <p>Create a soft, personal surprise with a handwritten note, a tiny bouquet, and a warm keepsake link for your loved one.</p>
+    <h1 class="hub-title">A virtual wish on their special day</h1>
+    <p>Create a gentle birthday surprise with a warm note, a tiny bouquet, and a special wish link for your loved one.</p>
     
     <div class="hub-cards">
       <div class="hub-card" onclick="goToStep(1)">
         <div class="hub-card-icon">🎁</div>
         <div class="hub-card-text">
-          <h3>Start your handmade card</h3>
-          <p>Pick a few flowers, write a heartfelt note, and send a simple surprise link.</p>
+          <h3>Send a virtual wish to your loved ones</h3>
+          <p>Write a heartfelt note, add a soft floral touch, and send a loving birthday wish.</p>
         </div>
       </div>
       <div class="hub-card" onclick="startOfflineSandbox()">
         <div class="hub-card-icon">🎉</div>
         <div class="hub-card-text">
-          <h3>Open the celebration mood</h3>
-          <p>Jump into a soft, playful birthday moment if you want something extra cheerful.</p>
+          <h3>Celebrate your birthday</h3>
+          <p>Enter a name, enjoy a warm birthday moment, and bless someone with gentle birthday wishes.</p>
         </div>
       </div>
     </div>
@@ -1443,7 +1443,7 @@
         
         <div class="form-group">
           <label class="form-label">Your Name</label>
-          <input type="text" id="sender-name" class="form-input" placeholder="e.g. Aarav" required>
+          <input type="text" id="sender-name" class="form-input" placeholder="e.g. Esmeray" required>
         </div>
         
         <div class="form-group">
@@ -1473,7 +1473,7 @@
         
         <div class="form-group">
           <label class="form-label">Birthday Person's Name</label>
-          <input type="text" id="recipient-name" class="form-input" placeholder="e.g. Goluuu" required>
+          <input type="text" id="recipient-name" class="form-input" placeholder="e.g. Sanam" required>
         </div>
         
         <div class="form-group">
@@ -2619,10 +2619,10 @@ function goToBirthdayGame() {
   
   lines = [
     `Happy Birthday <span class='highlight'>${surpriseData.rName}</span> 🎂🎈`,
-    `My <span class='highlight'>Dearest</span> 🎀💞`,
-    `A beautiful gift just for you 🍀`,
+    'May your day bloom with peace, joy, and blessings 🌸',
+    'May hope and light follow you throughout the year 🙏',
     `"${surpriseData.wish}"`,
-    `<span class='highlight'>- By ${surpriseData.sName}</span> ❤️`
+    `<span class='highlight'>- Warm wishes from ${surpriseData.sName}</span> ✨`
   ];
   
   state.started = true;
@@ -2633,6 +2633,8 @@ function goToBirthdayGame() {
 
 /* Offline Sandbox Celebration Entrance */
 function startOfflineSandbox() {
+  const birthdayName = prompt('Enter the birthday person\'s name for a warm, personal wish:', 'Dear one') || 'Dear one';
+
   changeScreen('screen-hub');
   document.getElementById('screen-hub').style.display = 'none';
   
@@ -2648,12 +2650,11 @@ function startOfflineSandbox() {
   resize();
   
   lines = [
-    "Happy Birthday <span class='highlight'>Goluuu</span> 🎂🎈",
-    "My <span class='highlight'>Love</span> 🎀💞",
-    "May God bless you 🙏🍀",
-    "And give you endless happiness 💕",
-    "I love you ❤️",
-    "And will always love you 💐❤️"
+    `Warm wishes to <span class='highlight'>${birthdayName}</span> on your birthday 🎂🎈`,
+    'May your day be filled with peace, smiles, and gentle blessings 🙏',
+    'May hope and light follow you through the year 🌟',
+    'Sending you a soft and joyful birthday wish from the heart 💐',
+    'May every moment feel calm, warm, and full of grace ✨'
   ];
   
   if (!audio) return;
@@ -3566,11 +3567,12 @@ function openWishModal() {
   const modal = document.getElementById('wish-modal');
   modal.style.display = 'flex';
   setTimeout(() => modal.style.opacity = '1', 10);
-  
-  if(surpriseData) {
-     document.getElementById('wish-name').value = surpriseData.sName;
-     document.getElementById('wish-email').value = surpriseData.rEmail;
-  }
+
+  const senderName = localStorage.getItem('surprise_sender_name') || (surpriseData ? surpriseData.sName : '');
+  const senderEmail = localStorage.getItem('surprise_sender_email') || (surpriseData ? surpriseData.rEmail : ESEWA_RECEIVER_CONFIG.esewaId);
+
+  document.getElementById('wish-name').value = senderName;
+  document.getElementById('wish-email').value = senderEmail;
 }
 
 function closeWishModal() {
@@ -3583,11 +3585,11 @@ function sendWish(e) {
   e.preventDefault();
   const wishName = document.getElementById("wish-name").value.trim();
   const wishEmail = document.getElementById("wish-email").value.trim();
-  const wishText = document.getElementById("wish-input").value;
+  const wishText = document.getElementById("wish-input").value.trim();
   
-  const email = wishEmail || ESEWA_RECEIVER_CONFIG.esewaId;
-  const subject = encodeURIComponent(`Birthday Wish from ${wishName}`);
-  const body = encodeURIComponent(wishText);
+  const email = wishEmail || localStorage.getItem('surprise_sender_email') || ESEWA_RECEIVER_CONFIG.esewaId;
+  const subject = encodeURIComponent(`Warm Birthday Wish from ${wishName}`);
+  const body = encodeURIComponent(`Hello there,\n\n${wishText}\n\nWarm wishes and blessings,\n${wishName}`);
   const isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
   
   const link = document.createElement('a');
