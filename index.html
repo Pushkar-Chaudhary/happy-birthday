@@ -1208,10 +1208,11 @@
   /* Wish Container (beside cake, right side) */
   #wish-container {
     position: absolute;
-    right: 8%;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 20;
+    right: 4%;
+    bottom: 10%;
+    top: auto;
+    transform: none;
+    z-index: 25;
     display: none;
     flex-direction: column;
     align-items: center;
@@ -1241,8 +1242,8 @@
   }
 
   @keyframes floatGameBtn {
-    0%, 100% { transform: translateY(-50%); }
-    50% { transform: translateY(-55%); }
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
   }
 
   /* Modal */
@@ -1327,6 +1328,19 @@
   }
 
   @media (max-width: 768px) {
+    #hint {
+      top: 10px;
+      bottom: auto;
+      left: 50%;
+      transform: translateX(-50%);
+      width: auto;
+      max-width: calc(100% - 24px);
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-size: 0.85rem;
+      z-index: 35;
+    }
+
     #text-container {
       top: 10%;
       left: 50%;
@@ -1342,7 +1356,6 @@
     
     #wish-container {
       right: 50%;
-      top: auto;
       bottom: 2%;
       transform: translateX(50%);
       animation: float-mobile 3s ease-in-out infinite;
@@ -1779,7 +1792,7 @@
         <div class="bouquet-layer" id="reveal-wrap-fg"></div>
         <div class="bouquet-layer" id="reveal-ribbon"></div>
       </div>
-      <button class="btn btn-gold" onclick="goToBirthdayGame()" style="margin-top: -30px; pointer-events: auto;">Step into the Party! 🎉</button>
+      <button class="btn btn-gold" onclick="goToBirthdayGame()" style="margin-top: -30px; pointer-events: auto;">Add Party Decoration 🎈</button>
     </div>
   </div>
 
@@ -2151,9 +2164,23 @@ function selectAvatar(el, avatarIcon) {
 
 /* ===== SCREEN TRANSITIONS ===== */
 function changeScreen(screenId) {
-  document.querySelectorAll('.screen').forEach(scr => scr.classList.remove('active'));
-  document.getElementById(screenId).classList.add('active');
+  document.querySelectorAll('.screen').forEach(scr => {
+    scr.classList.remove('active');
+    scr.style.display = 'none';
+  });
+
+  const target = document.getElementById(screenId);
+  if (target) {
+    target.classList.add('active');
+    target.style.display = 'flex';
+  }
+
   activeScreen = screenId;
+
+  const partyContainer = document.getElementById('canvas-celebration-container');
+  if (partyContainer) {
+    partyContainer.style.display = 'none';
+  }
 }
 
 function goHome(e) {
@@ -2276,7 +2303,7 @@ function selectRibbon(ribbonKey) {
 }
 
 /* Rendering helper that compiles bouquet SVG elements */
-function renderCustomBouquet(wrapKey, ribbonKey, pileId, bgLayerId, fgLayerId, ribbonLayerId) {
+function renderCustomBouquet(wrapKey, ribbonKey, pileId, bgLayerId, fgLayerId, ribbonLayerId, flowers = surprise.flowers) {
   const pile = document.getElementById(pileId);
   const bg = document.getElementById(bgLayerId);
   const fg = document.getElementById(fgLayerId);
@@ -2311,8 +2338,8 @@ function renderCustomBouquet(wrapKey, ribbonKey, pileId, bgLayerId, fgLayerId, r
   
   // Arrange Flowers inside pile based on coordinates
   let itemIdx = 0;
-  Object.keys(surprise.flowers).forEach(flowerKey => {
-    const qty = surprise.flowers[flowerKey];
+  Object.keys(flowers || {}).forEach(flowerKey => {
+    const qty = flowers[flowerKey] || 0;
     for (let q = 0; q < qty; q++) {
       if (itemIdx < FLOWER_OFFSETS.length) {
         const offset = FLOWER_OFFSETS[itemIdx];
@@ -2373,7 +2400,10 @@ function saveLetterAndProceed() {
 
 /* ===== URL PARAMETER SERIALIZATION ===== */
 function base64UrlEncode(value) {
-  return btoa(unescape(encodeURIComponent(value)))
+  const bytes = new TextEncoder().encode(value);
+  let binary = '';
+  bytes.forEach(byte => binary += String.fromCharCode(byte));
+  return btoa(binary)
     .replace(/\+/g, '-')
     .replace(/\//g, '_')
     .replace(/=+$/g, '');
@@ -2381,9 +2411,10 @@ function base64UrlEncode(value) {
 
 function base64UrlDecode(value) {
   const base64 = value.replace(/-/g, '+').replace(/_/g, '/');
-  const pad = base64.length % 4;
-  const padded = pad ? base64 + '='.repeat(4 - pad) : base64;
-  return decodeURIComponent(escape(atob(padded)));
+  const padded = base64 + '='.repeat((4 - (base64.length % 4)) % 4);
+  const binary = atob(padded);
+  const bytes = Uint8Array.from(binary, char => char.charCodeAt(0));
+  return new TextDecoder().decode(bytes);
 }
 
 function generateSurpriseUrl() {
@@ -2538,7 +2569,10 @@ function launchRecipientSurprise(base64Str) {
   try {
     const decoded = base64UrlDecode(decodeURIComponent(base64Str || ''));
     surpriseData = JSON.parse(decoded);
-    
+    surprise.flowers = { ...surpriseData.flowers } || { rose: 0, tulip: 0, lily: 0, daisy: 0 };
+    surprise.wrap = surpriseData.wrap || 'kraft';
+    surprise.ribbon = surpriseData.ribbon || 'pink';
+
     // Set Recipient details dynamically
     document.getElementById('label-recipient-name').innerText = `To: ${surpriseData.rName}`;
     document.getElementById('recipient-letter-text').innerText = surpriseData.wish;
@@ -2546,12 +2580,13 @@ function launchRecipientSurprise(base64Str) {
     
     // Prepare Recipient Bouquet Render
     renderCustomBouquet(
-      surpriseData.wrap, 
-      surpriseData.ribbon, 
-      'reveal-flowers-pile', 
-      'reveal-wrap-bg', 
-      'reveal-wrap-fg', 
-      'reveal-ribbon'
+      surpriseData.wrap,
+      surpriseData.ribbon,
+      'reveal-flowers-pile',
+      'reveal-wrap-bg',
+      'reveal-wrap-fg',
+      'reveal-ribbon',
+      surpriseData.flowers || surprise.flowers
     );
     
     // Activate Recipient Surprise Screen
@@ -2604,11 +2639,18 @@ function unwrapGiftBouquet() {
 }
 
 function goToBirthdayGame() {
-  changeScreen('screen-hub');
-  document.getElementById('screen-surprise').style.display = 'none';
-  
+  document.querySelectorAll('.screen').forEach(scr => {
+    scr.classList.remove('active');
+    scr.style.display = 'none';
+  });
+
   const gameContainer = document.getElementById('canvas-celebration-container');
-  gameContainer.style.display = 'block';
+  if (gameContainer) {
+    gameContainer.style.display = 'block';
+    gameContainer.style.zIndex = '100';
+  }
+
+  activeScreen = 'party-decoration';
   
   canvas = document.getElementById("canvas");
   ctx = canvas.getContext("2d");
@@ -2635,11 +2677,18 @@ function goToBirthdayGame() {
 function startOfflineSandbox() {
   const birthdayName = prompt('Enter the birthday person\'s name for a warm, personal wish:', 'Dear one') || 'Dear one';
 
-  changeScreen('screen-hub');
-  document.getElementById('screen-hub').style.display = 'none';
-  
+  document.querySelectorAll('.screen').forEach(scr => {
+    scr.classList.remove('active');
+    scr.style.display = 'none';
+  });
+
   const gameContainer = document.getElementById('canvas-celebration-container');
-  gameContainer.style.display = 'block';
+  if (gameContainer) {
+    gameContainer.style.display = 'block';
+    gameContainer.style.zIndex = '100';
+  }
+
+  activeScreen = 'party-decoration';
   
   canvas = document.getElementById("canvas");
   ctx = canvas.getContext("2d");
@@ -2842,8 +2891,13 @@ function drawTable(cx, cy, s) {
 /* ===== MICROPHONE candle BLOWING DETECTION ===== */
 function initMicrophone() {
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-    hintEl.innerText = "Please blow or tap screen to blow candles! 🎤";
-    window.addEventListener('click', forceBlowCandlesOnTap);
+    hintEl.innerText = "Please allow microphone access to blow the candles! 🎤";
+    return;
+  }
+
+  const allowMic = window.confirm('Allow microphone access so you can blow the candles with your breath?');
+  if (!allowMic) {
+    hintEl.innerText = "Microphone permission was not granted. You can still enjoy the birthday party! 🎂";
     return;
   }
 
@@ -2885,14 +2939,8 @@ function initMicrophone() {
     })
     .catch(err => {
       console.log("Microphone access denied or error:", err);
-      hintEl.innerText = "Please tap screen to blow candles! 🎂";
-      window.addEventListener('click', forceBlowCandlesOnTap);
+      hintEl.innerText = "Please allow microphone access to blow the candles! 🎤";
     });
-}
-
-function forceBlowCandlesOnTap() {
-  blowCandles();
-  window.removeEventListener('click', forceBlowCandlesOnTap);
 }
 
 function blowCandles() {
@@ -3530,7 +3578,7 @@ function typeWriter() {
 
 /* Continuous looping particle spawn */
 setInterval(() => {
-  if(state.started && activeScreen === 'screen-hub') { 
+  if(state.started && activeScreen === 'party-decoration') { 
     hearts.push(new Particle('heart'));
     if (Math.random() > 0.6) balloons.push(new Particle('balloon'));
   }
