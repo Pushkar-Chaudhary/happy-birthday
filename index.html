@@ -8,15 +8,16 @@
 <style>
   /* ===== CSS VARIABLES & RESET ===== */
   :root {
-    --bg-dark: #0d031b;
-    --bg-light: #fbf9f5;
-    --glass-bg: rgba(12, 12, 18, 0.72);
-    --glass-border: rgba(255, 255, 255, 0.12);
-    --gold: #d4af37;
-    --gold-glow: 0 0 15px rgba(212, 175, 55, 0.5);
-    --text-light: #f5f6fa;
-    --text-dark: #2f2e41;
-    --primary-gradient: linear-gradient(135deg, #1b072d 0%, #0d0218 100%);
+    --bg-dark: #f6efe8;
+    --bg-light: #fffaf6;
+    --glass-bg: rgba(255, 255, 255, 0.72);
+    --glass-border: rgba(110, 87, 71, 0.12);
+    --gold: #c89a64;
+    --gold-glow: 0 8px 18px rgba(200, 154, 100, 0.18);
+    --text-light: #4d433b;
+    --text-dark: #3f352d;
+    --text-soft: #6f655d;
+    --primary-gradient: linear-gradient(135deg, #f8efe7 0%, #efe3d8 100%);
     --font-heading: 'Cinzel', serif;
     --font-body: 'Outfit', sans-serif;
     --font-cursive: 'Sacramento', cursive;
@@ -28,7 +29,9 @@
     overflow-x: hidden;
     font-family: var(--font-body);
     color: var(--text-light);
-    background: var(--bg-dark);
+    background:
+      linear-gradient(135deg, #fffaf6 0%, #efe5db 45%, #f7efe8 100%);
+    background-attachment: fixed;
     min-height: 100vh;
     touch-action: manipulation;
   }
@@ -40,6 +43,8 @@
     z-index: 1;
     pointer-events: none;
     display: block;
+    opacity: 0.18;
+    filter: blur(0.2px);
   }
 
   /* ===== SCREEN MANAGER ===== */
@@ -67,11 +72,11 @@
 
   /* Glassmorphic Container */
   .glass-card {
-    background: var(--glass-bg);
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-    border: 1px solid var(--glass-border);
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
+    background: rgba(255, 255, 255, 0.78);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(110, 87, 71, 0.12);
+    box-shadow: 0 10px 18px rgba(89, 68, 52, 0.08), inset 0 1px 0 rgba(255,255,255,0.7);
     border-radius: 24px;
     padding: 35px;
     width: 100%;
@@ -81,8 +86,8 @@
   }
 
   .glass-card:hover {
-    border-color: rgba(255, 255, 255, 0.15);
-    box-shadow: 0 16px 35px rgba(0, 0, 0, 0.35);
+    border-color: rgba(110, 87, 71, 0.16);
+    box-shadow: 0 14px 24px rgba(89, 68, 52, 0.12), inset 0 1px 0 rgba(255,255,255,0.8);
   }
 
   /* Typography */
@@ -92,24 +97,24 @@
     font-weight: 600;
   }
   
-  h1 { font-size: 2.2rem; color: #fff; text-shadow: none; }
-  h2 { font-size: 1.8rem; margin-bottom: 20px; color: #fff; }
-  p { font-size: 1rem; line-height: 1.6; color: #ccc; margin-bottom: 20px; }
+  h1 { font-size: 2rem; color: var(--text-dark); text-shadow: none; }
+  h2 { font-size: 1.5rem; margin-bottom: 16px; color: var(--text-dark); }
+  p { font-size: 0.98rem; line-height: 1.55; color: var(--text-soft); margin-bottom: 16px; }
 
   /* Buttons Styling */
   .btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 14px 30px;
-    font-size: 1rem;
+    padding: 12px 24px;
+    font-size: 0.98rem;
     font-weight: 600;
-    color: white;
-    background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+    color: #fff;
+    background: linear-gradient(135deg, #d9a884, #c98b69);
     border: none;
     border-radius: 50px;
     cursor: pointer;
-    box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+    box-shadow: 0 8px 18px rgba(181, 133, 97, 0.18);
     font-family: var(--font-body);
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     text-decoration: none;
@@ -117,28 +122,29 @@
   }
 
   .btn:hover {
-    transform: translateY(-4px) scale(1.03);
-    box-shadow: 0 12px 30px rgba(255, 107, 107, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 18px rgba(181, 133, 97, 0.24);
   }
 
   .btn:active { transform: translateY(-1px); }
 
   .btn-gold {
-    background: linear-gradient(135deg, #d4af37, #aa7c11);
-    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
+    background: linear-gradient(135deg, #cfa77b, #b2865d);
+    box-shadow: 0 8px 18px rgba(182, 146, 109, 0.18);
   }
   .btn-gold:hover {
-    box-shadow: 0 12px 30px rgba(212, 175, 55, 0.5);
+    box-shadow: 0 10px 18px rgba(182, 146, 109, 0.24);
   }
 
   .btn-secondary {
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.65);
+    border: 1px solid rgba(110, 87, 71, 0.12);
+    color: var(--text-dark);
     box-shadow: none;
   }
   .btn-secondary:hover {
-    background: rgba(255,255,255,0.15);
-    box-shadow: 0 8px 20px rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.86);
+    box-shadow: 0 6px 14px rgba(89, 68, 52, 0.08);
   }
 
   /* ===== HUB SCREEN (PORTAL) ===== */
@@ -153,9 +159,11 @@
   }
 
   .hub-title {
-    font-size: 2.8rem;
+    font-size: 1.9rem;
+    line-height: 1.2;
     margin-bottom: 10px;
-    color: #fff;
+    color: var(--text-dark);
+    font-weight: 700;
   }
 
   .hub-cards {
@@ -167,8 +175,9 @@
   }
 
   .hub-card {
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.76);
+    border: 1px solid rgba(110, 87, 71, 0.12);
+    box-shadow: 0 6px 14px rgba(89, 68, 52, 0.06);
     border-radius: 20px;
     padding: 25px;
     text-align: left;
@@ -180,14 +189,15 @@
   }
 
   .hub-card:hover {
-    background: rgba(255,255,255,0.08);
-    border-color: rgba(255,255,255,0.2);
-    transform: translateY(-5px);
+    background: rgba(255,255,255,0.92);
+    border-color: rgba(110, 87, 71, 0.16);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 16px rgba(89, 68, 52, 0.08);
   }
 
   .hub-card-icon {
-    font-size: 2.5rem;
-    background: rgba(255,255,255,0.05);
+    font-size: 2rem;
+    background: rgba(247, 238, 229, 0.9);
     width: 60px;
     height: 60px;
     border-radius: 15px;
@@ -197,14 +207,14 @@
   }
 
   .hub-card-text h3 {
-    font-size: 1.2rem;
-    margin-bottom: 5px;
-    color: #fff;
+    font-size: 1rem;
+    margin-bottom: 4px;
+    color: var(--text-dark);
   }
   .hub-card-text p {
     font-size: 0.9rem;
     margin-bottom: 0;
-    color: #aaa;
+    color: var(--text-soft);
   }
 
   .footer-credits {
@@ -600,11 +610,11 @@
 
   /* CARD WRITER SHEET */
   .paper-letter-card {
-    background: var(--bg-light);
+    background: linear-gradient(180deg, #fffdfa 0%, #fff8f2 100%);
     color: var(--text-dark);
     border-radius: 15px;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.5), inset 0 0 20px rgba(0,0,0,0.05);
-    border: 8px double #e2d2b5;
+    box-shadow: 0 10px 20px rgba(89, 68, 52, 0.08), inset 0 1px 0 rgba(255,255,255,0.9);
+    border: 1px solid #eadbcf;
     padding: 35px 25px;
     text-align: left;
     width: 100%;
@@ -647,8 +657,8 @@
   /* SHARE HUB */
   .share-link-box {
     display: flex;
-    background: rgba(0,0,0,0.4);
-    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.72);
+    border: 1px solid rgba(110, 87, 71, 0.12);
     border-radius: 12px;
     padding: 6px;
     margin: 20px 0;
@@ -660,7 +670,7 @@
     background: transparent;
     border: none;
     padding: 10px 12px;
-    color: #fff;
+    color: var(--text-dark);
     flex-grow: 1;
     font-family: var(--font-body);
     font-size: 0.9rem;
@@ -686,7 +696,7 @@
 
   /* ===== RECIPIENT SURPRISE REVEAL SYSTEM ===== */
   .surprise-portal {
-    background: radial-gradient(circle at center, #1b072d 0%, #0d0218 100%);
+    background: linear-gradient(135deg, #fffaf6 0%, #efe4da 100%);
     width: 100%;
     min-height: 100vh;
     position: relative;
@@ -1078,16 +1088,16 @@
   }
 
   .modal-content {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.82);
     backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(110, 87, 71, 0.12);
     border-radius: 20px;
     padding: 40px;
     width: 90%;
     max-width: 500px;
     text-align: center;
     position: relative;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    box-shadow: 0 14px 28px rgba(89, 68, 52, 0.12);
   }
 
   .close-btn {
@@ -1096,27 +1106,27 @@
     right: 20px;
     font-size: 1.5rem;
     cursor: pointer;
-    color: #ccc;
+    color: var(--text-soft);
     transition: color 0.3s;
   }
   
-  .close-btn:hover { color: white; }
+  .close-btn:hover { color: var(--text-dark); }
 
   .modal-content h2 {
     margin-bottom: 20px;
     font-family: var(--font-cursive);
-    font-size: 3rem;
-    color: #ff9ff3;
+    font-size: 2.2rem;
+    color: var(--text-dark);
   }
 
   .modal-content textarea {
     width: 100%;
     height: 120px;
-    background: rgba(0,0,0,0.2);
-    border: 1px solid rgba(255,255,255,0.3);
+    background: rgba(249, 244, 238, 0.95);
+    border: 1px solid rgba(110, 87, 71, 0.16);
     border-radius: 10px;
     padding: 15px;
-    color: white;
+    color: var(--text-dark);
     font-family: var(--font-body);
     font-size: 1rem;
     resize: none;
@@ -1124,13 +1134,13 @@
   }
   .modal-content textarea:focus {
     outline: none;
-    border-color: #e056fd;
-    background: rgba(0,0,0,0.3);
+    border-color: #c89a64;
+    background: rgba(255,255,255,0.98);
   }
 
   .submit-wish-btn {
-    background: #ff9ff3;
-    color: #2a0845;
+    background: linear-gradient(135deg, #d6b08d, #b98258);
+    color: #fff;
     border: none;
     padding: 15px 40px;
     font-size: 1.1rem;
@@ -1206,22 +1216,22 @@
 <div id="screen-hub" class="screen active">
   <div class="glass-card">
     <div class="hub-logo">💐🎂</div>
-    <h1 class="hub-title">A virtual wish on their special day</h1>
-    <p>Create a gentle birthday surprise with a warm note, a tiny bouquet, and a special wish link for your loved one.</p>
+    <h1 class="hub-title">A small birthday wish</h1>
+    <p>A soft note, a tiny bouquet, and one calm link for someone you love.</p>
     
     <div class="hub-cards">
       <div class="hub-card" onclick="goToStep(1)">
         <div class="hub-card-icon">🎁</div>
         <div class="hub-card-text">
-          <h3>Send a virtual wish to your loved ones</h3>
-          <p>Write a heartfelt note, add a soft floral touch, and send a loving birthday wish.</p>
+          <h3>Send a warm wish</h3>
+          <p>Write a short note, add a soft floral touch, and send it gently.</p>
         </div>
       </div>
       <div class="hub-card" onclick="startOfflineSandbox()">
         <div class="hub-card-icon">🎉</div>
         <div class="hub-card-text">
-          <h3>Celebrate your birthday</h3>
-          <p>Enter a name, enjoy a warm birthday moment, and bless someone with gentle birthday wishes.</p>
+          <h3>Celebrate simply</h3>
+          <p>Pick a name and enjoy a small, cozy birthday moment.</p>
         </div>
       </div>
     </div>
@@ -1266,7 +1276,7 @@
     <div class="workspace-step-card active" id="step-card-1">
       <div class="glass-card" style="margin: 0 auto;">
         <h2>Start with your name</h2>
-        <p>Just add your name and a few details so the card feels personal and ready to share.</p>
+        <p>Add your name and email, then continue.</p>
         
         <div class="form-group">
           <label class="form-label">Your Name</label>
@@ -1296,7 +1306,7 @@
     <div class="workspace-step-card" id="step-card-2">
       <div class="glass-card" style="margin: 0 auto;">
         <h2>Birthday Person</h2>
-        <p>Who is receiving this surprise? Enter their name and Gmail.</p>
+        <p>Who is this surprise for?</p>
         
         <div class="form-group">
           <label class="form-label">Birthday Person's Name</label>
@@ -1319,7 +1329,7 @@
     <div class="workspace-step-card" id="step-card-3">
       <div class="glass-card" style="max-width: 100%; width: 100%; padding: 25px;">
         <h2 style="text-align: left; margin-bottom: 5px;">Floral Bouquet Designer</h2>
-        <p style="text-align: left; margin-bottom: 20px;">Choose flowers, wrap colors, and a gentle handwritten note. The simple version is free, and extra customized gift touches can be added later. 💖</p>
+        <p style="text-align: left; margin-bottom: 20px;">Choose a few flowers and a soft wrap. Keep it simple and cozy. 💖</p>
         
         <div class="bouquet-builder-workspace">
           
@@ -1455,7 +1465,7 @@
     <div class="workspace-step-card" id="step-card-4">
       <div class="glass-card" style="margin: 0 auto; max-width: 620px;">
         <h2>Write your note</h2>
-        <p>Type a warm, personal birthday message here. It will appear like a handwritten card on the page.</p>
+        <p>Write a short, personal birthday note here.</p>
         
         <div style="margin-bottom: 20px;">
           <textarea id="wish-textarea" class="form-input" style="height: 110px; font-family: var(--font-body); resize: none;" placeholder="Type your beautiful, heartfelt wishes here..." oninput="syncLetterText()"></textarea>
@@ -1478,7 +1488,7 @@
     <div class="workspace-step-card" id="step-card-5">
       <div class="glass-card" style="margin: 0 auto;">
         <h2>Your surprise is ready</h2>
-        <p>Everything is packed into one simple link so your loved one can open it gently and enjoy the moment.</p>
+        <p>Everything is ready in one simple link.</p>
         
         <div class="share-link-box">
           <input type="text" id="share-url-output" class="share-link-input" readonly value="">
@@ -2550,17 +2560,19 @@ function drawTable(cx, cy, s) {
 /* ===== MICROPHONE candle BLOWING DETECTION ===== */
 function initMicrophone() {
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-    hintEl.innerText = "Please allow microphone access to blow the candles! 🎤";
+    hintEl.innerText = "Microphone is not available on this browser. You can still enjoy the party! 🎂";
     return;
   }
 
-  const allowMic = window.confirm('Allow microphone access so you can blow the candles with your breath?');
-  if (!allowMic) {
-    hintEl.innerText = "Microphone permission was not granted. You can still enjoy the birthday party! 🎂";
-    return;
-  }
+  hintEl.innerText = "Allow microphone access to blow the candles with your breath. 🎤";
 
-  navigator.mediaDevices.getUserMedia({ audio: true })
+  navigator.mediaDevices.getUserMedia({
+    audio: {
+      echoCancellation: true,
+      noiseSuppression: true,
+      autoGainControl: true
+    }
+  })
     .then(stream => {
       const audioContext = new (window.AudioContext || window.webkitAudioContext)();
       const startDetection = () => {
@@ -2598,7 +2610,7 @@ function initMicrophone() {
     })
     .catch(err => {
       console.log("Microphone access denied or error:", err);
-      hintEl.innerText = "Please allow microphone access to blow the candles! 🎤";
+      hintEl.innerText = "Microphone access was blocked, but the party still works. 🎂";
     });
 }
 
