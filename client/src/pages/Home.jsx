@@ -137,7 +137,6 @@ export default function Home() {
         <p style={{ marginTop: 8, display: 'flex', justifyContent: 'center', gap: 16, flexWrap: 'wrap' }}>
           <Link to="/privacy">Privacy</Link>
           <Link to="/terms">Terms</Link>
-          <a href="/sitemap.xml">Sitemap</a>
         </p>
       </footer>
     </main>
