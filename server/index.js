@@ -9,9 +9,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import mongoose from 'mongoose';
-import cookieParser from 'cookie-parser';
 
-import authRoutes from './routes/auth.js';
 import wishRoutes from './routes/wishes.js';
 import Wish from './models/Wish.js';
 
@@ -40,7 +38,7 @@ const ALLOWED_ORIGINS = Array.from(
 const BASE_URL =
   (process.env.BASE_URL || CLIENT_URL).replace(/\/$/, '');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'wishly-dev-secret';
+
 
 const MONGODB_URI =
   process.env.MONGODB_URI ||
@@ -57,10 +55,8 @@ const indexHtml = path.join(dist, 'index.html');
 // Production checks
 // =========================
 
-if (process.env.NODE_ENV === 'production' && !JWT_SECRET) {
-  console.error('JWT_SECRET is required in production');
-  process.exit(1);
-}
+// Auth removed for frictionless guest creation
+
 
 // =========================
 // Middleware
@@ -78,12 +74,8 @@ app.use(
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || ALLOWED_ORIGINS.includes(origin)) {
-        callback(null, true);
-        return;
-      }
-
-      callback(new Error('Not allowed by CORS'));
+      // Allow all origins for seamless sharing and embed previews
+      callback(null, true);
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
@@ -91,14 +83,14 @@ app.use(
   })
 );
 
-app.use(express.json({ limit: '10kb' }));
-app.use(cookieParser());
+app.use(express.json({ limit: '50kb' }));
 
+// Generous rate limit tuned to support 100+ simultaneous users
 app.use(
   '/api',
   rateLimit({
     windowMs: 15 * 60 * 1000,
-    max: 400,
+    max: 3000,
     standardHeaders: true,
     legacyHeaders: false,
   })
@@ -108,7 +100,6 @@ app.use(
 // API routes
 // =========================
 
-app.use('/api/auth', authRoutes);
 app.use('/api/wishes', wishRoutes);
 
 // =========================
@@ -311,9 +302,13 @@ if (fs.existsSync(dist)) {
 // =========================
 
 mongoose
-  .connect(MONGODB_URI)
+  .connect(MONGODB_URI, {
+    maxPoolSize: 100, // Handle 100+ concurrent connections
+    minPoolSize: 10,
+    serverSelectionTimeoutMS: 5000,
+  })
   .then(() => {
-    console.log('MongoDB connected');
+    console.log('MongoDB connected (Connection pool: 100 max)');
 
     app.listen(PORT, '0.0.0.0', () => {
       console.log(`Wishly API running on port ${PORT}`);

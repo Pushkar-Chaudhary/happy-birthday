@@ -1,82 +1,75 @@
-// Shared constants used across both client pages and components
+// Shared constants for themes, flowers, and customization
 
 export const FLOWERS = {
-  rose:      { emoji: '🌹', name: 'Rose' },
-  tulip:     { emoji: '🌷', name: 'Tulip' },
-  daisy:     { emoji: '🌼', name: 'Daisy' },
-  sunflower: { emoji: '🌻', name: 'Sunflower' },
-  lily:      { emoji: '🌸', name: 'Lily' },
+  rose:      { name: 'Rose', color: '#e11d48' },
+  tulip:     { name: 'Tulip', color: '#ec4899' },
+  daisy:     { name: 'Daisy', color: '#facc15' },
+  sunflower: { name: 'Sunflower', color: '#eab308' },
+  lily:      { name: 'Lily', color: '#f8fafc' },
 };
 
 export const WRAPPING = {
-  kraft:    { name: 'Kraft Brown', color: '#c8ad7f' },
-  emerald:  { name: 'Emerald',    color: '#0f6139' },
-  velvet:   { name: 'Velvet',     color: '#1d1b4c' },
-  rosegold: { name: 'Rose Gold',  color: '#d4908a' },
+  kraft:    { name: 'Kraft', color: '#c8ad7f' },
+  emerald:  { name: 'Emerald', color: '#0f6139' },
+  velvet:   { name: 'Velvet', color: '#1d1b4c' },
+  rosegold: { name: 'Rose Gold', color: '#d4908a' },
 };
 
 export const RIBBONS = {
-  pink:    { name: 'Silk Pink',   color: '#ff8fa3' },
-  gold:    { name: 'Royal Gold',  color: '#d4af37' },
-  crimson: { name: 'Crimson',     color: '#bd081c' },
-  navy:    { name: 'Deep Blue',   color: '#0d47a1' },
+  pink:    { name: 'Silk Pink', color: '#ff8fa3' },
+  gold:    { name: 'Champagne Gold', color: '#d4af37' },
+  crimson: { name: 'Crimson', color: '#bd081c' },
+  navy:    { name: 'Deep Navy', color: '#0d47a1' },
 };
 
 export const THEMES = {
   rose: {
-    name: 'Rose',
-    emoji: '🌹',
-    bg: 'linear-gradient(135deg, #1a0011 0%, #2d0020 50%, #1a0011 100%)',
-    accent: '#ff6b9d',
-    glow: 'rgba(255,107,157,0.35)',
-    card: 'rgba(255,107,157,0.08)',
-    border: 'rgba(255,107,157,0.25)',
+    name: 'Rose Glow',
+    bg: 'linear-gradient(135deg, #180512 0%, #29081f 50%, #160410 100%)',
+    accent: '#fb7185',
+    glow: 'rgba(251,113,133,0.3)',
+    card: 'rgba(251,113,133,0.06)',
+    border: 'rgba(251,113,133,0.22)',
   },
   galaxy: {
-    name: 'Galaxy',
-    emoji: '🌌',
-    bg: 'linear-gradient(135deg, #030318 0%, #0a0628 50%, #030318 100%)',
+    name: 'Midnight Galaxy',
+    bg: 'linear-gradient(135deg, #050616 0%, #0d0e2e 50%, #040514 100%)',
     accent: '#a78bfa',
-    glow: 'rgba(167,139,250,0.35)',
-    card: 'rgba(167,139,250,0.08)',
-    border: 'rgba(167,139,250,0.25)',
+    glow: 'rgba(167,139,250,0.3)',
+    card: 'rgba(167,139,250,0.06)',
+    border: 'rgba(167,139,250,0.22)',
   },
   ocean: {
-    name: 'Ocean',
-    emoji: '🌊',
-    bg: 'linear-gradient(135deg, #001a1f 0%, #003344 50%, #001a1f 100%)',
-    accent: '#22d3ee',
-    glow: 'rgba(34,211,238,0.35)',
-    card: 'rgba(34,211,238,0.08)',
-    border: 'rgba(34,211,238,0.25)',
+    name: 'Ocean Depths',
+    bg: 'linear-gradient(135deg, #02141c 0%, #062836 50%, #021219 100%)',
+    accent: '#38bdf8',
+    glow: 'rgba(56,189,248,0.3)',
+    card: 'rgba(56,189,248,0.06)',
+    border: 'rgba(56,189,248,0.22)',
   },
   forest: {
-    name: 'Forest',
-    emoji: '🌿',
-    bg: 'linear-gradient(135deg, #001a0a 0%, #003318 50%, #001a0a 100%)',
+    name: 'Emerald Forest',
+    bg: 'linear-gradient(135deg, #04160d 0%, #082819 50%, #03140b 100%)',
     accent: '#4ade80',
-    glow: 'rgba(74,222,128,0.35)',
-    card: 'rgba(74,222,128,0.08)',
-    border: 'rgba(74,222,128,0.25)',
+    glow: 'rgba(74,222,128,0.3)',
+    card: 'rgba(74,222,128,0.06)',
+    border: 'rgba(74,222,128,0.22)',
   },
   gold: {
-    name: 'Gold',
-    emoji: '✨',
-    bg: 'linear-gradient(135deg, #1a1000 0%, #2d2000 50%, #1a1000 100%)',
+    name: 'Warm Gold',
+    bg: 'linear-gradient(135deg, #161004 0%, #2a1e06 50%, #140d02 100%)',
     accent: '#fbbf24',
-    glow: 'rgba(251,191,36,0.35)',
-    card: 'rgba(251,191,36,0.08)',
-    border: 'rgba(251,191,36,0.25)',
+    glow: 'rgba(251,191,36,0.3)',
+    card: 'rgba(251,191,36,0.06)',
+    border: 'rgba(251,191,36,0.22)',
   },
 };
 
-export const AVATARS = ['🎁', '🎂', '🎊', '🎉', '💝', '🌟', '🦋', '🎀', '🌺', '🦄'];
-
 export const MESSAGE_TEMPLATES = [
-  "Wishing you a day as bright as your smile and as warm as my heart. Happy Birthday! 🎂",
-  "On your special day, I hope you're surrounded by all the joy and love you deserve. Here's to you, superstar! ✨",
-  "Another year wiser, and still as amazing as ever. May this birthday bring everything you've ever wished for. 🌸",
-  "To someone who makes every day brighter just by being in it — here's to celebrating YOU today! 🎉",
+  "Wishing you a year filled with wonderful adventures, genuine joy, and every happiness you deserve.",
+  "Happy Birthday! Thank you for bringing so much light, warmth, and laughter into everyone's life.",
+  "May this year ahead be your brightest yet, full of memorable moments and dreams accomplished.",
+  "To an extraordinary person on your special day: celebrating everything you are and all that you do.",
 ];
 
 export const MAX_FLOWERS = 12;
