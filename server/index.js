@@ -20,6 +20,7 @@ const wishSchema = new mongoose.Schema({
   senderName: { type: String, required: true, maxlength: 60, trim: true },
   message: { type: String, required: true, maxlength: 1000 },
   theme: { type: String, required: true, maxlength: 30 },
+  bouquet: { type: mongoose.Schema.Types.Mixed, default: null },
   expiresAt: { type: Date, default: null },
 }, { timestamps: true });
 wishSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0, partialFilterExpression: { expiresAt: { $type: 'date' } } });
@@ -48,9 +49,10 @@ app.post('/api/wishes', async (req, res) => {
   const senderName = clean(req.body.senderName, 60);
   const message = clean(req.body.message, 1000);
   const theme = clean(req.body.theme, 30);
+  const bouquet = req.body.bouquet && typeof req.body.bouquet === 'object' ? req.body.bouquet : null;
   if (!recipientName || !senderName || !message || !theme || !allowedThemes.has(theme)) return res.status(400).json({ message: 'Please provide valid wish details.' });
   try {
-    const wish = await Wish.create({ slug: crypto.randomBytes(8).toString('base64url'), recipientName, senderName, message, theme });
+    const wish = await Wish.create({ slug: crypto.randomBytes(8).toString('base64url'), recipientName, senderName, message, theme, bouquet });
     res.status(201).json(wish);
   } catch (error) {
     console.error('Create wish failed:', error.message);
@@ -70,8 +72,18 @@ app.get('/api/wishes/:slug', async (req, res) => {
   }
 });
 
-app.use(express.static(clientDist, { immutable: true, maxAge: '1y' }));
-app.get('*', (_req, res) => res.sendFile(path.join(clientDist, 'index.html')));
+app.use(express.static(clientDist, {
+  immutable: true,
+  maxAge: '1y',
+  setHeaders(res, filePath) {
+    // The HTML points to the current hashed assets, so browsers must revalidate it after deploys.
+    if (path.basename(filePath) === 'index.html') res.setHeader('Cache-Control', 'no-cache');
+  },
+}));
+app.get('*', (_req, res) => {
+  res.setHeader('Cache-Control', 'no-cache');
+  res.sendFile(path.join(clientDist, 'index.html'));
+});
 
 mongoose.connect(process.env.MONGODB_URI || '', { serverSelectionTimeoutMS: 10000 })
   .then(() => app.listen(port, () => console.log(`Wishly server listening on port ${port}`)))

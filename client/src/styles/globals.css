@@ -1191,6 +1191,18 @@ textarea.form-input { resize: vertical; min-height: 110px; }
   gap: 10px;
 }
 
+.bouquet-builder { display: grid; grid-template-columns: minmax(180px, .9fr) minmax(220px, 1.1fr); gap: 22px; align-items: center; padding: 18px; border: 1px solid var(--border); border-radius: 16px; background: rgba(0,0,0,.16); }
+.bouquet-builder-preview { text-align: center; color: var(--text-muted); font-size: .8rem; }
+.bouquet-builder-preview .bouquet { margin-bottom: 8px; }
+.bouquet-controls h3 { color: #fff; margin: 0 0 10px; font-size: .95rem; }
+.flower-choice { display: grid; grid-template-columns: 30px 1fr 30px 20px 30px; align-items: center; gap: 7px; min-height: 38px; color: var(--text-soft); font-size: .88rem; }
+.flower-choice .flower-mark { width: 28px; height: 28px; }
+.flower-choice button { width: 28px; height: 28px; border-radius: 8px; color: #fff; background: rgba(255,255,255,.08); border: 1px solid var(--border); cursor: pointer; }
+.flower-choice button:disabled { opacity: .35; cursor: not-allowed; }
+.bouquet-controls .form-label { display: block; margin-top: 12px; }
+.bouquet-controls select { margin-top: 5px; }
+@media (max-width: 560px) { .bouquet-builder { grid-template-columns: 1fr; } .bouquet-builder-preview .bouquet { width: 155px !important; height: 190px !important; } }
+
 .theme-card {
   background: rgba(255, 255, 255, 0.035);
   border: 1px solid var(--border);

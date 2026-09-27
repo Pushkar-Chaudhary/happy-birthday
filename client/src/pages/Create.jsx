@@ -13,8 +13,11 @@ import {
   ArrowLeft,
 } from 'lucide-react';
 import { THEMES, MESSAGE_TEMPLATES } from '../constants.js';
+import { FLOWERS, WRAPPING, RIBBONS, MAX_FLOWERS } from '../constants.js';
 import { createWish } from '../api.js';
 import Seo from '../components/Seo.jsx';
+import Bouquet, { FlowerMark } from '../components/Bouquet.jsx';
+import { saveWish } from '../wishStorage.js';
 
 const STEPS = [
   { id: 1, title: 'Names', icon: User },
@@ -28,6 +31,7 @@ export default function Create() {
   const [senderName, setSenderName] = useState(() => localStorage.getItem('wishly_sender_name') || '');
   const [message, setMessage] = useState('');
   const [theme, setTheme] = useState('rose');
+  const [bouquet, setBouquet] = useState({ wrapping: 'kraft', ribbon: 'pink', flowers: { rose: 4, tulip: 3, daisy: 2 } });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [result, setResult] = useState(null);
@@ -59,12 +63,16 @@ export default function Create() {
     setError('');
     setLoading(true);
     try {
-      const data = await createWish({
+      const wish = {
         recipientName: recipientName.trim(),
         senderName: senderName.trim(),
         message: message.trim(),
         theme,
-      });
+        bouquet,
+      };
+      let data;
+      try { data = await createWish(wish); }
+      catch { data = saveWish(wish); }
 
       try {
         const saved = JSON.parse(localStorage.getItem('my_wishes') || '[]');
@@ -121,7 +129,7 @@ export default function Create() {
               Surprise created for {result.recipientName}
             </h1>
             <p className="result-subtitle">
-              Send this link. When they open it, the sealed letter, music, candles, and cake will be waiting.
+              Send this link. Your note, custom bouquet, music, candles, and cake will be waiting.
             </p>
 
             {/* Link Box */}
@@ -325,8 +333,22 @@ export default function Create() {
             {step === 3 && (
               <div className="step-content">
                 <div className="step-header">
-                  <h2 className="step-heading">Choose a mood theme</h2>
-                  <p className="step-subtext">Select the color palette for the celebration page.</p>
+                  <h2 className="step-heading">Build a flower bouquet</h2>
+                  <p className="step-subtext">Choose up to {MAX_FLOWERS} flowers, plus wrapping and ribbon.</p>
+                </div>
+
+                <div className="bouquet-builder">
+                  <div className="bouquet-builder-preview"><Bouquet bouquet={bouquet} size={190} /><span>{Object.values(bouquet.flowers).reduce((a, b) => a + b, 0)} / {MAX_FLOWERS} flowers</span></div>
+                  <div className="bouquet-controls">
+                    <h3>Pick your flowers</h3>
+                    {Object.entries(FLOWERS).map(([key, flower]) => {
+                      const count = bouquet.flowers[key] || 0;
+                      const total = Object.values(bouquet.flowers).reduce((a, b) => a + b, 0);
+                      return <div className="flower-choice" key={key}><FlowerMark type={key} /><span>{flower.name}</span><button type="button" aria-label={`Remove ${flower.name}`} disabled={!count} onClick={() => setBouquet(b => ({ ...b, flowers: { ...b.flowers, [key]: Math.max(0, (b.flowers[key] || 0) - 1) } }))}>−</button><strong>{count}</strong><button type="button" aria-label={`Add ${flower.name}`} disabled={total >= MAX_FLOWERS} onClick={() => setBouquet(b => ({ ...b, flowers: { ...b.flowers, [key]: (b.flowers[key] || 0) + 1 } }))}>+</button></div>;
+                    })}
+                    <label className="form-label">Wrapping<select className="form-input" value={bouquet.wrapping} onChange={e => setBouquet(b => ({ ...b, wrapping: e.target.value }))}>{Object.entries(WRAPPING).map(([key, value]) => <option key={key} value={key}>{value.name}</option>)}</select></label>
+                    <label className="form-label">Ribbon<select className="form-input" value={bouquet.ribbon} onChange={e => setBouquet(b => ({ ...b, ribbon: e.target.value }))}>{Object.entries(RIBBONS).map(([key, value]) => <option key={key} value={key}>{value.name}</option>)}</select></label>
+                  </div>
                 </div>
 
                 <div className="themes-grid">

@@ -31,8 +31,8 @@ function decodeWish(slug) {
   }
 }
 
-export function saveWish({ recipientName, senderName, message, theme }) {
-  const wish = { recipientName, senderName, message, theme, bouquet: { wrapping: 'kraft', ribbon: 'pink', flowers: { rose: 4, tulip: 3, daisy: 2, sunflower: 2, lily: 1 } }, createdAt: new Date().toISOString() };
+export function saveWish({ recipientName, senderName, message, theme, bouquet }) {
+  const wish = { recipientName, senderName, message, theme, bouquet, createdAt: new Date().toISOString() };
   const slug = encodeWish(wish);
   wish.slug = slug;
   const wishes = readWishes();

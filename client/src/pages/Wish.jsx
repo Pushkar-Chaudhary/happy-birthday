@@ -29,6 +29,11 @@ export default function Wish() {
   } = useBirthdaySong();
 
   useEffect(() => {
+    // Offline-created links contain the wish in the URL, so they need no API request.
+    if (slug.length > 32) {
+      const storedWish = getWish(slug);
+      if (storedWish) { setWish(storedWish); return; }
+    }
     loadWish(slug).then(setWish).catch(() => {
       const storedWish = getWish(slug);
       if (storedWish) setWish(storedWish);
