@@ -20,8 +20,8 @@ const HIGHLIGHTS = [
   },
   {
     icon: ShieldCheck,
-    title: 'Frictionless & secure',
-    desc: 'No registration, no passwords. Input is strictly sanitized and private.',
+    title: 'Frictionless & shareable',
+    desc: 'No registration or passwords. Create a link and share the celebration directly.',
   },
 ];
 

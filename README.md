@@ -1,34 +1,16 @@
 # Wishly
 
-React frontend, Node/Express API, MongoDB for users and wishes.
+Wishly is a frontend-only React birthday surprise app. It creates interactive birthday pages in the current browser and stores them in `localStorage`.
 
 ## Run locally
 
-1. Start MongoDB locally or connect to MongoDB Atlas.
-2. Use the real environment file already present in the project:
-   ```bash
-   copy .env .env.local
-   ```
-   or just update the existing `.env` values for your local or production deployment.
-3. Install dependencies:
-   ```bash
-   npm run install:all
-   ```
-5. Terminal A: `npm run dev:server`
-6. Terminal B: `npm run dev:client`
-
-App: http://localhost:5173 · API: http://localhost:5000
-
-`/sitemap.xml` and `/robots.txt` are served by the API and also shipped in the client `public` folder for static SEO hosting.
-
-## Production
-
 ```bash
-npm run build
-# set BASE_URL, CLIENT_URL, JWT_SECRET, MONGODB_URI and NODE_ENV=production
-npm start
+npm install
+npm run dev
 ```
 
-Express serves `client/dist`, injects Open Graph tags for birthday pages, and exposes a sitemap and robots file for search engines.
+Build for static hosting with `npm run build`. Deploy the generated `client/dist` directory to any static hosting provider.
 
-This stack is suitable for roughly 100–1000 visitors in a simple deployment: rate limiting, Helmet hardening, Mongo indexes on `slug` and `sender`, and static front-end build output. For larger traffic, place Nginx or Cloudflare in front and use MongoDB Atlas or a managed Mongo instance.
+## Data and sharing limitation
+
+Wish data is encoded into the generated link, so it works on another device without a server. The browser also caches created wishes locally. Because the link contains the message and names, anyone who receives the link can read that data; do not put secrets or sensitive information in a wish. The app has no authentication, server-side privacy, expiry, moderation, or shared database.

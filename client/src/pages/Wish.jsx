@@ -6,7 +6,7 @@ import Confetti from '../components/Confetti.jsx';
 import Bouquet from '../components/Bouquet.jsx';
 import Seo from '../components/Seo.jsx';
 import RealisticCake from '../components/RealisticCake.jsx';
-import api from '../api.js';
+import { getWish } from '../wishStorage.js';
 import { useBirthdaySong } from '../hooks/useBirthdaySong.js';
 
 export default function Wish() {
@@ -28,9 +28,9 @@ export default function Wish() {
   } = useBirthdaySong();
 
   useEffect(() => {
-    api.get(`/wishes/${slug}`)
-      .then((res) => setWish(res.data))
-      .catch(() => setError(true));
+    const storedWish = getWish(slug);
+    if (storedWish) setWish(storedWish);
+    else setError(true);
   }, [slug]);
 
   const burst = useCallback(() => {

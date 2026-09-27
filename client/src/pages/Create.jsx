@@ -11,10 +11,9 @@ import {
   Send,
   ArrowRight,
   ArrowLeft,
-  Flower2,
 } from 'lucide-react';
 import { THEMES, MESSAGE_TEMPLATES } from '../constants.js';
-import api from '../api.js';
+import { saveWish } from '../wishStorage.js';
 import Seo from '../components/Seo.jsx';
 
 const STEPS = [
@@ -60,7 +59,7 @@ export default function Create() {
     setError('');
     setLoading(true);
     try {
-      const { data } = await api.post('/wishes', {
+      const data = saveWish({
         recipientName: recipientName.trim(),
         senderName: senderName.trim(),
         message: message.trim(),
@@ -77,7 +76,7 @@ export default function Create() {
 
       setResult(data);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to create surprise. Please check your inputs.');
+      setError(err.message || 'Failed to create surprise. Please check your inputs.');
     } finally {
       setLoading(false);
     }
@@ -87,10 +86,12 @@ export default function Create() {
 
   const copyToClipboard = () => {
     if (!surpriseUrl) return;
-    navigator.clipboard.writeText(surpriseUrl).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2200);
-    });
+    navigator.clipboard.writeText(surpriseUrl)
+      .then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2200);
+      })
+      .catch(() => setError('Could not copy the link. Please copy it from the field.'));
   };
 
   const shareWhatsApp = () => {
@@ -118,7 +119,7 @@ export default function Create() {
               Surprise created for {result.recipientName}
             </h1>
             <p className="result-subtitle">
-              Send this private link. When they open it, the sealed letter, music, candles, and cake will be waiting.
+              Send this link. When they open it, the sealed letter, music, candles, and cake will be waiting.
             </p>
 
             {/* Link Box */}
