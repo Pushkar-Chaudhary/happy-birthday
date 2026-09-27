@@ -1,12 +1,22 @@
 {
-  "name": "birthday-letter-esewa-checkout",
+  "name": "wishly",
+  "private": true,
   "version": "1.0.0",
-  "description": "Secure eSewa checkout helper for the birthday gift page",
-  "main": "server.js",
+  "description": "Birthday surprise pages — React, Node, MongoDB",
   "scripts": {
-    "start": "node server.js"
+    "dev:server": "npm run dev --prefix server",
+    "dev:client": "npm run dev --prefix client",
+    "build": "npm run build --prefix client",
+    "start": "npm start --prefix server",
+    "install:all": "npm install --prefix server && npm install --prefix client"
   },
   "dependencies": {
-    "express": "^4.19.2"
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.4",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.7.0",
+    "helmet": "^8.3.0",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.10.2"
   }
 }
