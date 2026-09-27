@@ -13,7 +13,7 @@ import {
   ArrowLeft,
 } from 'lucide-react';
 import { THEMES, MESSAGE_TEMPLATES } from '../constants.js';
-import { saveWish } from '../wishStorage.js';
+import { createWish } from '../api.js';
 import Seo from '../components/Seo.jsx';
 
 const STEPS = [
@@ -59,7 +59,7 @@ export default function Create() {
     setError('');
     setLoading(true);
     try {
-      const data = saveWish({
+      const data = await createWish({
         recipientName: recipientName.trim(),
         senderName: senderName.trim(),
         message: message.trim(),
@@ -82,7 +82,9 @@ export default function Create() {
     }
   };
 
-  const surpriseUrl = result ? `${window.location.origin}/w/${result.slug}` : '';
+  const surpriseUrl = result
+    ? `${window.location.origin}${window.location.pathname}#/w/${result.slug}`
+    : '';
 
   const copyToClipboard = () => {
     if (!surpriseUrl) return;

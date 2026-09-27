@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: wishly
+    runtime: node
+    buildCommand: npm install --prefix client && npm run build --prefix client && npm install --prefix server
+    startCommand: npm start --prefix server
+    healthCheckPath: /api/health
+    envVars:
+      - key: MONGODB_URI
+        sync: false
+      - key: CLIENT_URL
+        sync: false
+      - key: NODE_ENV
+        value: production

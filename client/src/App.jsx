@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar.jsx';
 import Home from './pages/Home.jsx';
 import Create from './pages/Create.jsx';
@@ -19,13 +19,13 @@ function MainLayout() {
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         {/* Full-screen immersive wish reveal */}
         <Route path="/w/:slug" element={<Wish />} />
         {/* Main application pages */}
         <Route path="/*" element={<MainLayout />} />
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 }

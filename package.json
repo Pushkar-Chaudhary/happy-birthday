@@ -2,10 +2,13 @@
   "name": "wishly",
   "private": true,
   "version": "1.0.0",
-  "description": "Frontend-only birthday surprise pages",
+  "description": "Birthday surprise pages with a React frontend and Node API",
   "scripts": {
     "dev": "npm run dev --prefix client",
+    "dev:server": "npm run dev --prefix server",
+    "start": "npm run build --prefix client && npm start --prefix server",
     "build": "npm run build --prefix client",
-    "preview": "npm run preview --prefix client"
+    "preview": "npm run preview --prefix client",
+    "install:all": "npm install --prefix client && npm install --prefix server"
   }
 }
