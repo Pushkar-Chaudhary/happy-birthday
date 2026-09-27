@@ -1,5 +1,7 @@
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Seo from '../components/Seo.jsx';
+import { useBirthdaySong } from '../hooks/useBirthdaySong.js';
 import {
   Cake,
   Sparkle,
@@ -42,6 +44,12 @@ const TRUST_POINTS = [
 ];
 
 export default function Home() {
+  const { playBirthdaySong } = useBirthdaySong();
+
+  useEffect(() => {
+    playBirthdaySong();
+  }, [playBirthdaySong]);
+
   return (
     <main className="page">
       <Seo title="Wishly — Birthday surprise pages" description="Create a private birthday page: wax-sealed letter, wrapped bouquet, and candles to blow. Share one link." />

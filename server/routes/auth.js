@@ -2,6 +2,7 @@ import { Router } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
+import auth from '../middleware/auth.js';
 
 const router = Router();
 
@@ -75,6 +76,63 @@ router.post('/login', async (req, res) => {
     setAuthCookie(res, token);
 
     res.json({ user: safeUser(user) });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// POST /api/auth/forgot-password
+router.post('/forgot-password', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const cleanEmail = String(email || '').trim().toLowerCase();
+    const nextPassword = String(password || '');
+
+    if (!cleanEmail || !nextPassword) {
+      return res.status(400).json({ message: 'Email and new password are required' });
+    }
+
+    if (nextPassword.length < 6) {
+      return res.status(400).json({ message: 'Password must be at least 6 characters' });
+    }
+
+    const user = await User.findOne({ email: cleanEmail });
+    if (!user) {
+      return res.status(404).json({ message: 'No account was found with that email address.' });
+    }
+
+    user.password = await bcrypt.hash(nextPassword, 10);
+    await user.save();
+
+    res.json({ message: 'Password updated successfully. Please sign in with your new password.' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// PUT /api/auth/change-password (auth required)
+router.put('/change-password', auth, async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const user = await User.findById(req.user.id);
+
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ message: 'Current and new passwords are required' });
+    }
+    if (String(newPassword).length < 6) {
+      return res.status(400).json({ message: 'Password must be at least 6 characters' });
+    }
+    if (!(await bcrypt.compare(String(currentPassword), user.password))) {
+      return res.status(401).json({ message: 'Current password is incorrect' });
+    }
+
+    user.password = await bcrypt.hash(String(newPassword), 10);
+    await user.save();
+
+    res.json({ message: 'Password updated successfully.' });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Server error' });

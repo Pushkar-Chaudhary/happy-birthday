@@ -437,8 +437,22 @@ textarea.form-input { resize: vertical; min-height: 110px; }
   width: 54px; height: 36px; color: #d4af37; font-size: 2rem; line-height: 1; text-align: center;
 }
 
-.cake-scene { cursor: pointer; user-select: none; width: 140px; margin: 0 auto; }
+.cake-scene { user-select: none; width: 220px; margin: 0 auto; }
+.cake-scene svg { display: block; width: 100%; height: auto; filter: drop-shadow(0 18px 22px rgba(0, 0, 0, 0.22)); }
 .flame { transform-origin: center bottom; animation: flicker .18s infinite alternate; }
 .cake-scene.blown .flame { opacity: 0; animation: none; }
+.cake-scene.cut .cake-cut { opacity: 1; }
+.cake-cut { opacity: 0; transition: opacity .25s ease; }
+.cake-stage { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.knife-button {
+  display: inline-flex; align-items: center; gap: 8px; justify-content: center;
+  padding: 10px 16px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.07); color: #fff; box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+}
+.knife-button:hover { transform: translateY(-2px); }
+.mic-status {
+  min-height: 48px; max-width: 420px; text-align: center; color: rgba(255,255,255,0.8);
+  font-size: 0.82rem; line-height: 1.55;
+}
 @keyframes flicker { to { transform: scaleY(.7) translateY(2px); opacity: .75; } }
 

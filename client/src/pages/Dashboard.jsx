@@ -5,6 +5,68 @@ import api from '../api.js';
 import Seo from '../components/Seo.jsx';
 import { Copy, Check, Eye, Trash, Sparkle } from '../components/Icons.jsx';
 
+function PasswordCard() {
+  const [form, setForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setMessage('');
+    setError('');
+
+    if (form.newPassword.length < 6) {
+      setError('New password must be at least 6 characters.');
+      return;
+    }
+
+    if (form.newPassword !== form.confirmPassword) {
+      setError('New passwords do not match.');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { data } = await api.put('/auth/change-password', {
+        currentPassword: form.currentPassword,
+        newPassword: form.newPassword,
+      });
+      setMessage(data.message || 'Password updated successfully.');
+      setForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
+    } catch (err) {
+      setError(err.response?.data?.message || 'Could not update the password.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="glass" style={{ padding: '24px 22px', marginBottom: 24 }}>
+      <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1.45rem', marginBottom: 12 }}>Change password</h2>
+      {error && <div className="alert alert-error" style={{ marginBottom: 16 }}>{error}</div>}
+      {message && <div className="alert" style={{ marginBottom: 16, background: 'rgba(74,222,128,0.1)', border: '1px solid rgba(74,222,128,0.25)', color: '#bbf7d0' }}>{message}</div>}
+      <form onSubmit={handleSubmit} style={{ display: 'grid', gap: 14 }}>
+        <div className="form-group">
+          <label className="form-label" htmlFor="current-password">Current password</label>
+          <input id="current-password" type="password" className="form-input" value={form.currentPassword} onChange={e => setForm(f => ({ ...f, currentPassword: e.target.value }))} required autoComplete="current-password" />
+        </div>
+        <div className="form-group">
+          <label className="form-label" htmlFor="new-password">New password</label>
+          <input id="new-password" type="password" className="form-input" value={form.newPassword} onChange={e => setForm(f => ({ ...f, newPassword: e.target.value }))} required autoComplete="new-password" />
+        </div>
+        <div className="form-group">
+          <label className="form-label" htmlFor="confirm-new-password">Confirm new password</label>
+          <input id="confirm-new-password" type="password" className="form-input" value={form.confirmPassword} onChange={e => setForm(f => ({ ...f, confirmPassword: e.target.value }))} required autoComplete="new-password" />
+        </div>
+        <button type="submit" className="btn btn-primary" disabled={loading} style={{ width: 'fit-content', padding: '12px 20px' }}>
+          {loading ? 'Updating…' : 'Update password'}
+        </button>
+      </form>
+    </div>
+  );
+}
+
 function WishCard({ wish, onDelete }) {
   const theme = THEMES[wish.theme] || THEMES.rose;
   const date = new Date(wish.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
@@ -110,6 +172,8 @@ export default function Dashboard() {
           <Sparkle size={16} /> New wish
         </Link>
       </div>
+
+      <PasswordCard />
 
       {/* Stats row */}
       {wishes.length > 0 && (
