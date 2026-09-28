@@ -15,7 +15,7 @@ export default function Navbar() {
         </Link>
         <div className="nav-actions">
           {pathname !== '/create' && (
-            <Link to="/create" className="btn btn-primary btn-sm">
+            <Link to="/create" className="btn btn-primary btn-sm" aria-label="Create a surprise">
               <Sparkles size={14} />
               <span>Create Surprise</span>
             </Link>

@@ -10,6 +10,7 @@ export default function Confetti({ active }) {
     if (!active || !ref.current) return;
     const container = ref.current;
     container.innerHTML = '';
+    const pieces = document.createDocumentFragment();
 
     for (let i = 0; i < 90; i++) {
       const el = document.createElement('div');
@@ -35,8 +36,9 @@ export default function Confetti({ active }) {
         opacity: 0.9;
         clip-path: ${shape === 'star' ? 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)' : 'none'};
       `;
-      container.appendChild(el);
+      pieces.appendChild(el);
     }
+    container.appendChild(pieces);
 
     const timer = setTimeout(() => { container.innerHTML = ''; }, 5000);
     return () => { clearTimeout(timer); container.innerHTML = ''; };

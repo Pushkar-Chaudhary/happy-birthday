@@ -1420,5 +1420,26 @@ textarea.form-input { resize: vertical; min-height: 110px; }
   text-align: center;
 }
 
+@media (max-width: 640px) {
+  .container { width: 100%; padding-left: 20px; padding-right: 20px; }
+  .hero-heading,
+  .hero-subheading,
+  .steps-grid { width: calc(100vw - 56px); max-width: calc(100vw - 56px); }
+  .hero-container,
+  .hero-heading,
+  .hero-subheading,
+  .steps-grid,
+  .step-card { min-width: 0; }
+  .hero-heading,
+  .hero-subheading { width: 100%; max-width: 100%; white-space: normal; }
+  .hero-heading { font-size: clamp(1.9rem, 7.4vw, 2.45rem); overflow-wrap: anywhere; text-wrap: balance; }
+  .hero-subheading { font-size: 0.9rem; }
+  .steps-grid { grid-template-columns: minmax(0, 1fr); }
+  .navbar .container { width: 100%; padding-left: 16px; padding-right: 16px; }
+  .nav-inner,
+  .nav-actions { min-width: 0; }
+  .nav-actions .btn { padding-left: 12px; padding-right: 12px; }
+  .nav-actions .btn span { display: none; }
+}
 
 

@@ -107,8 +107,9 @@ export default function RealisticCake({ blown, cut, onBlow, onCut, recipientName
         source.connect(analyser);
 
         const dataArray = new Uint8Array(analyser.frequencyBinCount);
+        let lastSampleAt = 0;
 
-        const monitorAudio = () => {
+        const monitorAudio = (timestamp) => {
           if (isCancelled) return;
           analyser.getByteFrequencyData(dataArray);
 
@@ -124,7 +125,12 @@ export default function RealisticCake({ blown, cut, onBlow, onCut, recipientName
 
           const avg = sum / dataArray.length;
           const normalized = Math.min(1, avg / 120);
-          setAudioLevel(normalized);
+          // Keep breath detection at display-frame speed, but avoid rerendering
+          // the whole cake for the meter on every frame.
+          if (timestamp - lastSampleAt >= 80) {
+            lastSampleAt = timestamp;
+            setAudioLevel(normalized);
+          }
 
           // Blowing produces heavy low frequency air disturbance
           const lowEnergy = lowFreqSum / lowBins;
@@ -144,7 +150,7 @@ export default function RealisticCake({ blown, cut, onBlow, onCut, recipientName
         };
 
         setMicActive(true);
-        monitorAudio();
+        monitorAudio(performance.now());
       } catch (err) {
         console.log('Mic access error or denied:', err);
         setMicError(true);

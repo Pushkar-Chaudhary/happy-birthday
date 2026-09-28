@@ -1,5 +1,5 @@
 {
-  "installCommand": "npm ci --prefix client --include=dev",
+  "installCommand": "npm ci --prefix client --include=dev && npm ci --prefix server --omit=dev",
   "buildCommand": "npm run build --prefix client",
   "outputDirectory": "client/dist",
   "framework": "vite"
