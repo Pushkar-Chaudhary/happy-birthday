@@ -71,7 +71,12 @@ export default function Create() {
         bouquet,
       };
       let data;
-      try { data = await createWish(wish); }
+      try {
+        data = await createWish(wish);
+        // Static hosts can rewrite missing API routes to index.html with a 200 response.
+        // Treat a response without a wish slug as unavailable and use the browser fallback.
+        if (!data?.slug) throw new Error('Wish API is unavailable.');
+      }
       catch { data = saveWish(wish); }
 
       try {
