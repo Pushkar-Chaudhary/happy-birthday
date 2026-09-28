@@ -24,8 +24,8 @@ import { shareWishCard } from '../shareCard.js';
 
 const STEPS = [
   { id: 1, title: 'Names', icon: User },
-  { id: 2, title: 'Note', icon: Heart },
-  { id: 3, title: 'Theme', icon: Palette },
+  { id: 2, title: 'Message', icon: Heart },
+  { id: 3, title: 'Flowers', icon: Palette },
   { id: 4, title: 'Review', icon: Eye },
 ];
 
@@ -39,6 +39,7 @@ export default function Create() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [result, setResult] = useState(null);
+  const [linkStorage, setLinkStorage] = useState('');
   const [copied, setCopied] = useState(false);
 
   const handleNext = () => {
@@ -79,11 +80,14 @@ export default function Create() {
       let data;
       try {
         data = await createWish(wish);
-        // Static hosts can rewrite missing API routes to index.html with a 200 response.
-        // Treat a response without a wish slug as unavailable and use the browser fallback.
-        if (!data?.slug) throw new Error('Wish API is unavailable.');
+        // Some static hosts return index.html with status 200 for an unhandled API path.
+        if (!data?.slug) throw new Error('The wish API did not return a link.');
+        setLinkStorage('database');
+      } catch {
+        // Keep cross-device links usable if the API or database is not configured.
+        data = saveWish(wish);
+        setLinkStorage('portable');
       }
-      catch { data = saveWish(wish); }
 
       rememberWish(data);
 
@@ -96,8 +100,9 @@ export default function Create() {
   };
 
   const surpriseUrl = result
-    ? `${window.location.origin}${window.location.pathname}#/w/${result.slug}`
+    ? `${window.location.origin}/w/${result.slug}`
     : '';
+  const isLocalPreview = ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname);
 
   const copyToClipboard = () => {
     if (!surpriseUrl) return;
@@ -145,6 +150,16 @@ export default function Create() {
             <p className="result-subtitle">
               Send this link. Your note, custom bouquet, music, candles, and cake will be waiting.
             </p>
+            {linkStorage === 'portable' && (
+              <div className="alert-box info" role="status">
+                This link works across devices. The database service did not respond, so the wish is carried in the link itself.
+              </div>
+            )}
+            {isLocalPreview && (
+              <div className="alert-box info" role="status">
+                This is a preview link from this computer. Deploy the app to a public website before sharing it with others.
+              </div>
+            )}
             {error && <div className="alert-box error" role="alert">{error}</div>}
 
             {/* Link Box */}
@@ -297,7 +312,7 @@ export default function Create() {
             {step === 2 && (
               <div className="step-content">
                 <div className="step-header">
-                  <h2 className="step-heading">Write your heartfelt note</h2>
+                  <h2 className="step-heading">Write a birthday message</h2>
                   <p className="step-subtext">This note will appear inside the wax-sealed letter.</p>
                 </div>
 
@@ -348,7 +363,7 @@ export default function Create() {
                     className="btn btn-primary"
                     onClick={handleNext}
                   >
-                    <span>Choose Theme</span>
+                    <span>Choose flowers</span>
                     <ArrowRight size={15} />
                   </button>
                 </div>

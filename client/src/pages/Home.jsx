@@ -5,31 +5,31 @@ import Seo from '../components/Seo.jsx';
 const HIGHLIGHTS = [
   {
     icon: Music,
-    title: 'Music on opening',
-    desc: 'Birthday music begins as soon as the recipient taps the wax-sealed letter.',
+    title: 'A song for their birthday',
+    desc: 'A birthday song starts when they open their letter.',
   },
   {
     icon: Flame,
-    title: 'Realistic candle blowing',
-    desc: 'Blow directly into your microphone to extinguish the candles with smoke effects.',
+    title: 'Blow out the candles',
+    desc: 'Blow into your device, or use the on-screen button.',
   },
   {
     icon: Cake,
-    title: 'Interactive cake knife',
-    desc: 'Grab and move the knife across the cake to cut a realistic slice.',
+    title: 'Cut a slice of cake',
+    desc: 'Move the knife across the cake to cut a slice.',
   },
   {
     icon: ShieldCheck,
-    title: 'Frictionless & shareable',
-    desc: 'No registration or passwords. Create a link and share the celebration directly.',
+    title: 'Easy to share',
+    desc: 'No account is needed. Send the link to the birthday person.',
   },
 ];
 
 const STEPS = [
-  { num: '01', title: 'Enter Names', desc: 'Add who the surprise is for and who it is from.' },
-  { num: '02', title: 'Write Your Note', desc: 'Write a warm, personal birthday message.' },
-  { num: '03', title: 'Pick a Theme', desc: 'Choose a tailored color palette and bouquet.' },
-  { num: '04', title: 'Share & Celebrate', desc: 'Send the unique link and celebrate together.' },
+  { num: '01', title: 'Add names', desc: 'Tell us who the surprise is for and who it is from.' },
+  { num: '02', title: 'Write a message', desc: 'Add a warm birthday message.' },
+  { num: '03', title: 'Choose flowers', desc: 'Pick a bouquet and colors.' },
+  { num: '04', title: 'Review and share', desc: 'Check your surprise, then send the link.' },
 ];
 
 export default function Home() {
@@ -54,7 +54,7 @@ export default function Home() {
           </h1>
 
           <p className="hero-subheading">
-            Craft a memorable birthday moment for someone special. They open a sealed letter, hear birthday music, blow out realistic candles with their mic, and slice the cake.
+            Make a birthday surprise with a personal letter, flowers, music, and a cake they can enjoy. No account is needed.
           </p>
 
           <div className="hero-actions">

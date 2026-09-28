@@ -5,7 +5,7 @@ import Seo from '../components/Seo.jsx';
 import { getMyWishes, removeMyWish } from '../wishStorage.js';
 
 function wishUrl(slug) {
-  return `${window.location.origin}${window.location.pathname}#/w/${slug}`;
+  return `${window.location.origin}/w/${slug}`;
 }
 
 function formatDate(value) {

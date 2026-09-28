@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar.jsx';
 import Home from './pages/Home.jsx';
 import MyWishes from './pages/MyWishes.jsx';
@@ -24,14 +24,20 @@ function MainLayout() {
 }
 
 export default function App() {
+  if (window.location.hash.startsWith('#/')) {
+    const legacyPath = window.location.hash.slice(1);
+    const basePath = window.location.pathname.replace(/\/$/, '');
+    window.history.replaceState(null, '', `${basePath}${legacyPath}${window.location.search}`);
+  }
+
   return (
-    <HashRouter>
+    <BrowserRouter>
       <Routes>
         {/* Full-screen immersive wish reveal */}
         <Route path="/w/:slug" element={<Suspense fallback={<div className="center loading-page"><div className="spinner" /><p>Preparing your celebration…</p></div>}><Wish /></Suspense>} />
         {/* Main application pages */}
         <Route path="/*" element={<MainLayout />} />
       </Routes>
-    </HashRouter>
+    </BrowserRouter>
   );
 }

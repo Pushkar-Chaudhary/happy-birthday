@@ -13,7 +13,7 @@ import { useBirthdaySong } from '../hooks/useBirthdaySong.js';
 export default function Wish() {
   const { slug } = useParams();
   const [wish, setWish] = useState(null);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState('');
   const [stage, setStage] = useState('envelope'); // 'envelope' -> 'letter' -> 'gift' -> 'reveal'
   const [openEnv, setOpenEnv] = useState(false);
   const [openGift, setOpenGift] = useState(false);
@@ -29,16 +29,31 @@ export default function Wish() {
   } = useBirthdaySong();
 
   useEffect(() => {
+    let active = true;
+    setWish(null);
+    setError('');
+
     // Offline-created links contain the wish in the URL, so they need no API request.
     if (slug.length > 32) {
       const storedWish = getWish(slug);
-      if (storedWish) { setWish(storedWish); return; }
+      if (storedWish) {
+        setWish(storedWish);
+        return () => { active = false; };
+      }
+      setError('invalid');
+      return () => { active = false; };
     }
-    loadWish(slug).then(setWish).catch(() => {
+
+    loadWish(slug).then((data) => {
+      if (!data?.recipientName || !data?.message) throw new Error('The wish service returned incomplete data.');
+      if (active) setWish(data);
+    }).catch((loadError) => {
       const storedWish = getWish(slug);
+      if (!active) return;
       if (storedWish) setWish(storedWish);
-      else setError(true);
+      else setError(loadError.status === 404 ? 'not-found' : 'unavailable');
     });
+    return () => { active = false; };
   }, [slug]);
 
   const burst = useCallback(() => {
@@ -79,8 +94,15 @@ export default function Wish() {
     return (
       <div className="center missing-page">
         <Seo title="Wish not found — Wishly" description="This birthday surprise is missing." />
-        <h1>Surprise not found</h1>
-        <p style={{ color: 'var(--text-muted)' }}>The link may have expired or is incorrect.</p>
+        <h1>{error === 'not-found' ? 'We couldn’t find this surprise' : error === 'invalid' ? 'This link looks incomplete' : 'We can’t open this surprise right now'}</h1>
+        <p style={{ color: 'var(--text-muted)' }}>
+          {error === 'not-found'
+            ? 'Ask the sender to check that they copied the whole link.'
+            : error === 'invalid'
+              ? 'Ask the sender to copy and send the full link again.'
+              : 'Check your internet connection and try again.'}
+        </p>
+        {error === 'unavailable' && <button className="btn btn-secondary" type="button" onClick={() => window.location.reload()}>Try again</button>}
         <Link to="/" className="btn btn-primary">Create a surprise</Link>
       </div>
     );

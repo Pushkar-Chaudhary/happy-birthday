@@ -17,7 +17,11 @@ async function request(path, options = {}) {
     clearTimeout(timeout);
   }
   const data = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(data.message || 'The service is temporarily unavailable.');
+  if (!response.ok) {
+    const error = new Error(data.message || 'The service is temporarily unavailable.');
+    error.status = response.status;
+    throw error;
+  }
   return data;
 }
 
