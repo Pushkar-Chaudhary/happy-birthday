@@ -49,7 +49,7 @@ export default function Home() {
           </div>
 
           <h1 className="hero-heading">
-            A heartfelt letter, birthday song,<br />
+            A heartfelt letter, a custom bouquet,<br />
             <span className="hero-heading-gradient">and candles to blow.</span>
           </h1>
 

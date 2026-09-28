@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Cake, Sparkles } from 'lucide-react';
+import { Cake, Heart, Sparkles } from 'lucide-react';
 
 export default function Navbar() {
   const { pathname } = useLocation();
@@ -13,14 +13,18 @@ export default function Navbar() {
           </span>
           <span className="nav-logo-text">Wishly</span>
         </Link>
-        <div className="nav-actions">
+        <nav className="nav-actions" aria-label="Main navigation">
+          <Link to="/my-wishes" className="nav-link" aria-label="My wishes" title="My wishes">
+            <Heart size={15} aria-hidden="true" />
+            <span>My wishes</span>
+          </Link>
           {pathname !== '/create' && (
             <Link to="/create" className="btn btn-primary btn-sm" aria-label="Create a surprise">
               <Sparkles size={14} />
               <span>Create Surprise</span>
             </Link>
           )}
-        </div>
+        </nav>
       </div>
     </header>
   );

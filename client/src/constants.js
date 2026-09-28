@@ -25,7 +25,7 @@ export const RIBBONS = {
 export const THEMES = {
   rose: {
     name: 'Rose Glow',
-    bg: 'linear-gradient(135deg, #180512 0%, #29081f 50%, #160410 100%)',
+    bg: '#180f13',
     accent: '#fb7185',
     glow: 'rgba(251,113,133,0.3)',
     card: 'rgba(251,113,133,0.06)',
@@ -33,7 +33,7 @@ export const THEMES = {
   },
   galaxy: {
     name: 'Midnight Galaxy',
-    bg: 'linear-gradient(135deg, #050616 0%, #0d0e2e 50%, #040514 100%)',
+    bg: '#10111a',
     accent: '#a78bfa',
     glow: 'rgba(167,139,250,0.3)',
     card: 'rgba(167,139,250,0.06)',
@@ -41,7 +41,7 @@ export const THEMES = {
   },
   ocean: {
     name: 'Ocean Depths',
-    bg: 'linear-gradient(135deg, #02141c 0%, #062836 50%, #021219 100%)',
+    bg: '#0c1519',
     accent: '#38bdf8',
     glow: 'rgba(56,189,248,0.3)',
     card: 'rgba(56,189,248,0.06)',
@@ -49,7 +49,7 @@ export const THEMES = {
   },
   forest: {
     name: 'Emerald Forest',
-    bg: 'linear-gradient(135deg, #04160d 0%, #082819 50%, #03140b 100%)',
+    bg: '#0d1711',
     accent: '#4ade80',
     glow: 'rgba(74,222,128,0.3)',
     card: 'rgba(74,222,128,0.06)',
@@ -57,7 +57,7 @@ export const THEMES = {
   },
   gold: {
     name: 'Warm Gold',
-    bg: 'linear-gradient(135deg, #161004 0%, #2a1e06 50%, #140d02 100%)',
+    bg: '#17140d',
     accent: '#fbbf24',
     glow: 'rgba(251,191,36,0.3)',
     card: 'rgba(251,191,36,0.06)',

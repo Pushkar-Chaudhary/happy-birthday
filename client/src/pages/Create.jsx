@@ -11,18 +11,22 @@ import {
   Send,
   ArrowRight,
   ArrowLeft,
+  Eye,
+  ImageDown,
 } from 'lucide-react';
 import { THEMES, MESSAGE_TEMPLATES } from '../constants.js';
 import { FLOWERS, WRAPPING, RIBBONS, MAX_FLOWERS } from '../constants.js';
 import { createWish } from '../api.js';
 import Seo from '../components/Seo.jsx';
 import Bouquet, { FlowerMark } from '../components/Bouquet.jsx';
-import { saveWish } from '../wishStorage.js';
+import { rememberWish, saveWish } from '../wishStorage.js';
+import { shareWishCard } from '../shareCard.js';
 
 const STEPS = [
   { id: 1, title: 'Names', icon: User },
   { id: 2, title: 'Note', icon: Heart },
   { id: 3, title: 'Theme', icon: Palette },
+  { id: 4, title: 'Review', icon: Eye },
 ];
 
 export default function Create() {
@@ -56,6 +60,8 @@ export default function Create() {
         return;
       }
       setStep(3);
+    } else if (step === 3) {
+      setStep(4);
     }
   };
 
@@ -79,13 +85,7 @@ export default function Create() {
       }
       catch { data = saveWish(wish); }
 
-      try {
-        const saved = JSON.parse(localStorage.getItem('my_wishes') || '[]');
-        const updated = [{ slug: data.slug, recipientName: data.recipientName, createdAt: new Date().toISOString() }, ...saved.filter(w => w.slug !== data.slug)].slice(0, 20);
-        localStorage.setItem('my_wishes', JSON.stringify(updated));
-      } catch {
-        // ignore
-      }
+      rememberWish(data);
 
       setResult(data);
     } catch (err) {
@@ -103,6 +103,7 @@ export default function Create() {
     if (!surpriseUrl) return;
     navigator.clipboard.writeText(surpriseUrl)
       .then(() => {
+        setError('');
         setCopied(true);
         setTimeout(() => setCopied(false), 2200);
       })
@@ -112,6 +113,14 @@ export default function Create() {
   const shareWhatsApp = () => {
     const text = encodeURIComponent(`I made a birthday surprise for you! Open it here: ${surpriseUrl}`);
     window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
+  };
+
+  const shareImage = async () => {
+    try {
+      await shareWishCard({ recipientName: result.recipientName, message, theme, url: surpriseUrl });
+    } catch (err) {
+      if (err.name !== 'AbortError') setError('Could not create the share image. Please try again.');
+    }
   };
 
   return (
@@ -136,6 +145,7 @@ export default function Create() {
             <p className="result-subtitle">
               Send this link. Your note, custom bouquet, music, candles, and cake will be waiting.
             </p>
+            {error && <div className="alert-box error" role="alert">{error}</div>}
 
             {/* Link Box */}
             <div className="link-box">
@@ -152,12 +162,20 @@ export default function Create() {
                 onClick={copyToClipboard}
               >
                 {copied ? <Check size={15} /> : <Copy size={15} />}
-                <span>{copied ? 'Copied' : 'Copy'}</span>
+                <span aria-live="polite">{copied ? 'Copied' : 'Copy'}</span>
               </button>
             </div>
 
             {/* Action Buttons */}
             <div className="result-actions">
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={shareImage}
+              >
+                <ImageDown size={15} />
+                <span>Share image</span>
+              </button>
               <button
                 type="button"
                 className="btn btn-whatsapp"
@@ -195,7 +213,7 @@ export default function Create() {
         ) : (
           <div className="create-card anim-fade-up">
             {/* Step Indicator Header */}
-            <div className="stepper-nav">
+            <nav className="stepper-nav" aria-label="Surprise creation steps">
               {STEPS.map((s) => {
                 const IconComponent = s.icon;
                 const isActive = step === s.id;
@@ -205,6 +223,7 @@ export default function Create() {
                     key={s.id}
                     type="button"
                     className={`stepper-item ${isActive ? 'active' : ''} ${isCompleted ? 'completed' : ''}`}
+                    aria-current={isActive ? 'step' : undefined}
                     onClick={() => {
                       if (s.id < step) setStep(s.id);
                     }}
@@ -217,9 +236,9 @@ export default function Create() {
                   </button>
                 );
               })}
-            </div>
+            </nav>
 
-            {error && <div className="alert-box error">{error}</div>}
+            {error && <div className="alert-box error" role="alert">{error}</div>}
 
             {/* Step 1: Names */}
             {step === 1 && (
@@ -283,7 +302,9 @@ export default function Create() {
                 </div>
 
                 <div className="form-group">
+                  <label htmlFor="message-input" className="form-label">Your birthday message</label>
                   <textarea
+                    id="message-input"
                     rows={5}
                     maxLength={1000}
                     placeholder="Write something warm and meaningful from the heart..."
@@ -334,7 +355,7 @@ export default function Create() {
               </div>
             )}
 
-            {/* Step 3: Theme Selection & Generate */}
+            {/* Step 3: Theme Selection */}
             {step === 3 && (
               <div className="step-content">
                 <div className="step-header">
@@ -395,18 +416,46 @@ export default function Create() {
                   </button>
                   <button
                     type="button"
-                    className="btn btn-primary btn-lg"
-                    disabled={loading}
-                    onClick={handleGenerate}
+                    className="btn btn-primary"
+                    onClick={handleNext}
                   >
-                    {loading ? (
-                      <span>Creating surprise...</span>
-                    ) : (
-                      <>
-                        <Sparkles size={16} />
-                        <span>Create Surprise Link</span>
-                      </>
-                    )}
+                    <span>Review surprise</span>
+                    <ArrowRight size={15} />
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {step === 4 && (
+              <div className="step-content">
+                <div className="step-header">
+                  <h2 className="step-heading">Review your surprise</h2>
+                  <p className="step-subtext">Check the details before creating the shareable link.</p>
+                </div>
+
+                <article className="wish-review" aria-label="Birthday surprise preview">
+                  <div className="wish-review-heading">
+                    <div>
+                      <span className="wish-review-kicker">A birthday surprise for</span>
+                      <h3>{recipientName.trim()}</h3>
+                    </div>
+                    <span className="wish-review-theme" style={{ color: THEMES[theme].accent }}>{THEMES[theme].name}</span>
+                  </div>
+                  <blockquote>{message.trim()}</blockquote>
+                  <p className="wish-review-signature">With love, {senderName.trim()}</p>
+                  <div className="wish-review-bouquet">
+                    <Bouquet bouquet={bouquet} size={156} />
+                    <span>Your custom bouquet</span>
+                  </div>
+                </article>
+
+                <div className="step-footer">
+                  <button type="button" className="btn btn-ghost" onClick={() => setStep(3)}>
+                    <ArrowLeft size={15} />
+                    <span>Edit details</span>
+                  </button>
+                  <button type="button" className="btn btn-primary btn-lg" disabled={loading} onClick={handleGenerate}>
+                    {loading ? <span>Creating surprise...</span> : <><Sparkles size={16} /><span>Create Surprise Link</span></>}
                   </button>
                 </div>
               </div>

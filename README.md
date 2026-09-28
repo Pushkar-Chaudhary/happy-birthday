@@ -1,24 +1,28 @@
 # Wishly
 
-Wishly is a birthday surprise app with a React frontend, a small Node/Express API, and MongoDB storage. Wishes receive short permanent links and are available from any device.
+Wishly creates shareable birthday surprise pages with a React frontend, an Express API, and MongoDB storage. When the API is configured, wishes are stored centrally. If the API is unavailable, the app can create a self-contained link that works without central storage.
 
 ## Local development
 
-1. Copy `server/.env.example` to `server/.env` and set a MongoDB connection string.
-2. Install dependencies: `npm run install:all`
-3. Start the API: `npm run dev:server`
-4. In a second terminal, start Vite: `npm run dev`
+1. Set `MONGODB_URI` in `server/.env` (the local environment file).
+2. Install dependencies with `npm run install:all`.
+3. Start the API with `npm run dev:server`.
+4. In another terminal, start the frontend with `npm run dev`.
 
-The frontend uses `/api` in development. Set `VITE_API_URL` when the API is hosted on a separate origin.
+Vite proxies `/api` requests to `http://localhost:5000`. To use an API hosted on another origin, set `VITE_API_URL` to its `/api` URL when building the frontend, and set `CLIENT_URL` on the API to the frontend's origin.
 
-## Production
+## Deploy with Render
 
-Set `MONGODB_URI`, `CLIENT_URL`, and `PORT` in the server environment, then run `npm start`. The server builds and serves `client/dist` and handles the API. Deploy the Node process to Render, Railway, Fly.io, or a container platform, and use MongoDB Atlas for the database.
+The repository includes a Render Blueprint in `render.yaml`. Create a MongoDB database (for example, in MongoDB Atlas), then create a new Blueprint Instance from this repository and set `MONGODB_URI` when prompted. Render builds the frontend and serves it and the API from the same Node service, so `CLIENT_URL` is not needed for this setup. The health check uses `/api/health` and reports unavailable until MongoDB is connected.
 
-### Vercel
+## Deploy with Vercel
 
-Import the repository with the project root set to the repository root. `vercel.json` installs both the client and server dependencies, builds the Vite frontend, and publishes `client/dist`; the `/api/*` routes are handled by the Vercel function in `api/`.
+Import the repository with the project root set to the repository root. The included `vercel.json` builds the Vite app into `client/dist`; the function in `api/` handles `/api/*` requests.
 
-Add `MONGODB_URI` to the Vercel project's Environment Variables for Production and Preview deployments. `CLIENT_URL` is not needed when the frontend and API use the same Vercel domain. If MongoDB Atlas restricts network access, allow connections from the deployed function environment.
+Set `MONGODB_URI` in the Vercel project's Environment Variables for every environment you plan to use, including Preview if desired. `CLIENT_URL` is unnecessary when the frontend and API share a Vercel domain. Ensure your MongoDB provider permits connections from the deployed function. Redeploy after changing environment variables.
 
-The API validates input, applies security headers, limits request rates, and uses indexed short IDs. Authentication, password-protected wishes, editing, deletion, moderation, analytics, expiration management, and media storage need additional product-specific endpoints and object storage; they cannot be secured in the browser alone.
+## Deploy the static frontend with Netlify
+
+The included `netlify.toml` builds and publishes the frontend. For durable, cross-device wishes, also deploy the API and set `VITE_API_URL` to the API's full `/api` URL in Netlify's build environment. Set `CLIENT_URL` on that API to the Netlify site origin, then rebuild the frontend. Without a configured API and MongoDB, wishes use self-contained links rather than centralized storage.
+
+The API validates input, applies security headers and request rate limits, and uses indexed short IDs. Authentication, password-protected wishes, editing, deletion, moderation, analytics, expiration management, and media storage need additional product-specific endpoints and object storage; they cannot be secured in the browser alone.

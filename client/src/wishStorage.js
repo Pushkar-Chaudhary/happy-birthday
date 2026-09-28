@@ -1,4 +1,5 @@
 const STORAGE_KEY = 'wishly_wishes';
+const HISTORY_KEY = 'my_wishes';
 
 function readWishes() {
   try {
@@ -45,4 +46,29 @@ export function saveWish({ recipientName, senderName, message, theme, bouquet })
 export function getWish(slug) {
   const cached = readWishes()[slug];
   return cached || decodeWish(slug);
+}
+
+export function getMyWishes() {
+  try {
+    const value = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+    return Array.isArray(value)
+      ? value.filter((wish) => wish && typeof wish.slug === 'string' && typeof wish.recipientName === 'string')
+      : [];
+  } catch { return []; }
+}
+
+export function rememberWish(wish) {
+  const saved = getMyWishes();
+  const next = [{
+    slug: wish.slug,
+    recipientName: wish.recipientName,
+    createdAt: wish.createdAt || new Date().toISOString(),
+  }, ...saved.filter((item) => item.slug !== wish.slug)].slice(0, 50);
+  try { localStorage.setItem(HISTORY_KEY, JSON.stringify(next)); } catch { /* The wish link remains usable without history. */ }
+}
+
+export function removeMyWish(slug) {
+  try {
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(getMyWishes().filter((wish) => wish.slug !== slug)));
+  } catch { /* Ignore unavailable local storage. */ }
 }
